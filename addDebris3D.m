@@ -6,7 +6,10 @@ function [ aout, bout ] = addDebris3D( polyA,polyB,debrisStart,debrisThickness )
 %16 = bottom facet, 32 = top facet
 %   Detailed explanation goes here
 
+close all
+facet_flag = polyB(:,4);
 
+%for the input poly file, find the upper facets
 
 end
 
