@@ -1,4 +1,4 @@
-function [S1,S2,S4] = ellipseChunk(L,grounded,Hi0,dhill,tongH,Yres,Xres);
+function [S1,S2,S4] = ellipseChunk(L,grounded,Hi0,dhill,tongH,Yres,Xres)
 
 % S1 (LHS)
 ynodes = ceil(Hi0/Yres) + 1;
