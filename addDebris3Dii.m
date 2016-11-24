@@ -15,10 +15,10 @@
 %%
 clear;clf;
 % first: what are you going to call this poly file?
-str = 'rockTest.poly';
+str = 'lense23D.poly';
 
 nd = 100;                           % number nodes in X-dir
-L = 1000;                            % length of domain in X-dir
+L = 1000;                           % length of domain in X-dir
 x = linspace(0,L,nd);               % X-dir
 
 
