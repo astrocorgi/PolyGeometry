@@ -90,7 +90,7 @@ end;
 for i = (2*n_basal) + 1 : (2*n_basal) + n_surface
     ii = i-2*n_basal;
     nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = x_surface(ii);          % x
+    nodes(i,2) = x(ii);          % x
     nodes(i,3) = glacier_width;                 % y, back face
     nodes(i,4) = surface(ii);           % z, surface
 end;
@@ -99,27 +99,27 @@ end;
 for i = (2*n_basal + n_surface) + 1 : (2*n_basal + 2*n_surface)
     ii = i-(2*n_basal)-n_surface;
     nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = x_surface(ii);          % x
+    nodes(i,2) = x(ii);          % x
     nodes(i,3) = 0;                 % y, back face
     nodes(i,4) = surface(ii);           % z, surface
 end;
 
 % DEBRIS nodes: ----------------------------------------------------------
 % front side:
-for i = (2*n_basal) + 1 : (2*n_basal) + n_debris
-    ii = i-2*n_basal;               %going backwards from end of front side surface
+for i = (2*n_basal + 2*n_surface) + 1 : (2*n_basal + 2*n_surface) + n_debris
+    ii = i-2*n_basal-2*n_surface;               %incrementing through this section only
     nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = x_surface(ii);     % x location of this node
+    nodes(i,2) = xdebris(ii);     % x location of this node
     nodes(i,3) = glacier_width;     % y set to glacier width for all nodes
     nodes(i,4) = zdebris(ii);       % z, surface (I think this should be debris surface)
 end;
 % back side (bounds of loop are written this way for clarity):
-for i = (2*n_basal + 2*n_surface) + 1 : (2*n_basal + 2*n_surface) + n_debris
-    ii = i-(2*n_basal)-2*n_surface;
+for i = (2*n_basal + 2*n_surface + n_debris) + 1 : (2*n_basal + 2*n_surface) + 2*n_debris
+    ii = i-(2*n_basal)-2*n_surface-n_debris; % incrementing through this section only
     nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = x_surface(ii);          % x
+    nodes(i,2) = xdebris(ii);     % x
     nodes(i,3) = 0;                 % y, back face
-    nodes(i,4) = zdebris(ii);           % z, surface
+    nodes(i,4) = zdebris(ii);       % z, surface
 end;
 
 
@@ -128,13 +128,13 @@ end;
 % the surface and basal sides
 
 dx = mean(diff(x));
-bl = 400; nbl = find((nodes(:,2) >= bl-dx) & (nodes(:,2) <= bl+dx)); 
+bl = 400; nbl = find((nodes(:,2) >= bl-dx) & (nodes(:,2) <= bl+dx)); %basal left?
           nbl = [nbl(1) nbl(3)]; % this is front / back side BOTTOM
-br = 450; nbr = find((nodes(:,2) >= br-dx) & (nodes(:,2) <= br+dx)); 
+br = 450; nbr = find((nodes(:,2) >= br-dx) & (nodes(:,2) <= br+dx)); %basal right?
           nbr = [nbr(1) nbr(3)]; % this is front / back side BOTTOM
-sl = 425; nsl = find((nodes(:,2) >= sl-dx) & (nodes(:,2) <= sl+dx)); 
+sl = 425; nsl = find((nodes(:,2) >= sl-dx) & (nodes(:,2) <= sl+dx)); %surface left?
           nsl = [nsl(5) nsl(7)]; % this is front / back side SURFACE
-sr = 475; nsr = find((nodes(:,2) >= sr-dx) & (nodes(:,2) <= sr+dx)); 
+sr = 475; nsr = find((nodes(:,2) >= sr-dx) & (nodes(:,2) <= sr+dx)); %surface right?
           nsr = [nsr(5) nsr(7)]; % this is front / back side SURFACE
 % PLOT for sanity check:
 plot3(nodes(:,2)  ,nodes(:,3)  ,nodes(:,4),'k.'); hold on;
@@ -245,18 +245,19 @@ for f = 1 : n_surface-1
     y0facets(f,5) = indices(f,2);        %  ._________. I(f+1,1)
 end
 
-% Y1 (back side) ----------------------------------------------------------
+% Y1 (back side) ;) -------------------------------------------------------
 % on the back side you'll have (s-1) quadrilateral elements and (2)
 % triangular elements (on the left and right sides -- deal w/ those last)
 y1header = NaN*ones(n_surface-1,3); % 3 numbers make up a header
 y1facets = NaN*ones(n_surface-1,5); % 1 number saying the number of nodes we'll have
                             % and 4 nodes comprising the actual facet
-flag = 8;                   % Y0 flag;
+flag = 8;                   % Y1 flag;
 
 
 % this is a really important array: 
 %   the 1st column are front basal node numbers excluding the ends
-%   the 2nd column are front surface node numbers:
+%   the 2nd column are front surface node numbers: (should maybe say "back"
+%   not "front"?
 indices = [[n_basal+2:n_basal+n_basal-1]' [2*n_basal+n_surface+1:2*n_basal+2*n_surface]']; % call it I in the pic below
 
 for f = 1 : n_surface-1
@@ -297,7 +298,7 @@ yTRIface(3,:) = [3      (n_basal+2)   (n_basal+1)   (2*n_basal+n_surface+1)];
 yTRIhead(4,:) = [1 0 flag];
 yTRIface(4,:) = [3      (2*n_basal)   (2*n_basal-1) (2*n_basal+2*n_surface)];
 
-% DEBRIS FACETS left / right side -----------------------------------------
+%% DEBRIS FACETS left / right side -----------------------------------------
 debhead = NaN*ones(2,3);
 debface = NaN*ones(2,5);
 % there are only 2 facets for an inner debris band
@@ -308,6 +309,75 @@ debface(1,:) = [4 nbl(1) nbl(2) nsl(2) nsl(1)];
 % right:
 debhead(2,:) = [1 0 0]; % there is no boundary flag for an internal facet
 debface(2,:) = [4 nbr(1) nbr(2) nsr(2) nsr(1)];
+
+% Y0D (front debris side) -------------------------------------------------
+% on the front side you'll have (d-1) quadrilateral elements and (2)
+% triangular elements (on the left and right sides -- deal w/ those last)
+flag = 4;                   % Y0 flag;
+
+
+% this is a really important array: 
+%   the 1st column are front surface nodes excluding those before the
+%   debris and at the ends
+%   the 2nd column are the debris surface nodes excluding the start and the
+%   end?
+surf_index1 = 2*n_basal + 1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
+surf_index2 = 2*n_basal + 1 + n_surface - 1; %+1 for indexing, -1 to skip the last
+debris_index1 = (2*n_basal + 2*n_surface) + 1 + 1; %+1 for indexing, +1 to skip the first 
+debris_index2 = 2*n_basal + 2*n_surface + 1 + n_debris -1 ;
+indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
+
+%preallocate
+y0header_debris = zeros(length(indices),3);
+y0facets_debris = zeros(length(indices),5);
+
+% Debris Y0
+for f = 1 : length(indices)-1
+    y0header_debris(f,1) = 1;
+    y0header_debris(f,2) = 0;
+    y0header_debris(f,3) = flag;
+
+    y0facets_debris(f,1) = 4;                   %  I(f,2)   I(f+1,2)
+    y0facets_debris(f,2) = indices(f,1);        %  o_________o
+    y0facets_debris(f,3) = indices(f+1,1);      %  |         |
+    y0facets_debris(f,4) = indices(f+1,2);      %  |I(f,1)   |
+    y0facets_debris(f,5) = indices(f,2);        %  ._________. I(f+1,1)
+end
+
+
+% Y1D (front debris side) -------------------------------------------------
+% on the front side you'll have (d-1) quadrilateral elements and (2)
+% triangular elements (on the left and right sides -- deal w/ those last)
+flag = 8;                   % Y1 flag;
+
+
+% this is a really important array: 
+%   the 1st column are front surface nodes excluding those before the
+%   debris and at the ends
+%   the 2nd column are the debris surface nodes excluding the start and the
+%   end?
+surf_index1 = 2*n_basal + n_surface + +1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
+surf_index2 = 2*n_basal + 1 + 2*n_surface - 1; %+1 for indexing, -1 to skip the last
+debris_index1 = (2*n_basal + 2*n_surface) + n_debris + 1 + 1; %+1 for indexing, +1 to skip the first 
+debris_index2 = 2*n_basal + 2*n_surface + 1 + 2*n_debris - 1 ;
+indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
+
+%preallocate
+y1header_debris = zeros(length(indices),3);
+y1facets_debris = zeros(length(indices),5);
+
+% Debris Y0
+for f = 1 : length(indices)-1
+    y1header_debris(f,1) = 1;
+    y1header_debris(f,2) = 0;
+    y1header_debris(f,3) = flag;
+
+    y1facets_debris(f,1) = 4;                   %  I(f,2)   I(f+1,2)
+    y1facets_debris(f,2) = indices(f,1);        %  o_________o
+    y1facets_debris(f,3) = indices(f+1,1);      %  |         |
+    y1facets_debris(f,4) = indices(f+1,2);      %  |I(f,1)   |
+    y1facets_debris(f,5) = indices(f,2);        %  ._________. I(f+1,1)
+end
 
 %% BECAUSE C++ / TETGEN LIBRARY NUMBER EVERYTHING STARTING FROM 0, WE 
 %  SUBTRACT 1 EVERYWHERE.
