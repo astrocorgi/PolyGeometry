@@ -28,11 +28,11 @@ x = linspace(0,L,x_nodes);               % X-dir
 % srf = srf(2:end-1);
 % xsrf = x(2:end-1);
 
-basal = 300*exp(-x/400);            % basal topo
+basal = 300*exp(-x/400);            % basal position function
 a =  -28.3223;                      % ???
 n_basal = 2.37e-03;                 % ???
 c = 328.3223;                       % ???
-surface = a*exp(n_basal*x)+c;       % surface topo
+surface = a*exp(n_basal*x)+c;       % surface position function
 surface = surface(2:end-1);         % trimming the surface topo
 x_surface = x(2:end-1);             % x corresponding to # surface pts.
 %% dz determination
@@ -52,7 +52,7 @@ dz = m*xdebris; %y = mx, equal to thickness of debris on top of surface
 zdebris = zdebris + dz; 
 debris_end = [debris_thickness+xmax, basal(end)]; %[x, z]
 
-xdebris = [xdebris debris_end(1)+2*debris_thickness]; %Make it thicker at the base
+xdebris = [xdebris debris_end(1)+1.5*debris_thickness]; %Make it a bit extra thick at the base by adding 1.5* debris thickness to x value
 zdebris = [zdebris debris_end(2)];
 
 glacier_width = 100;                        % width between Y0 / Y1 faces
@@ -62,6 +62,20 @@ n_surface = length(surface);    %num surface nodes
 n_debris = length(xdebris);
 %ib = 1:length(x);               % this is a single index of basal nodes
 %is = 1:length(x_surface);       % this is a single index of surface nodes
+
+
+%% Variables for important intersections
+
+int1_b = n_basal
+int2_b = 2*n_basal
+int3_s = 2*n_basal + 1
+int4_s = 2*n_basal + n_surface
+int5_s = 2*n_basal + n_surface + 1
+int6_s = 2*n_basal + 2*n_surface
+int7_d = 2*n_basal + 2*n_surface + 1
+int8_d = 2*n_basal + 2*n_surface + n_debris
+int9_d = 2*n_basal + 2*n_surface + n_debris + 1
+int10_d = 2*n_basal + 2*n_surface + 2*n_debris
 
 
 %% ---------------------------- NODES ----------------------------------%%
@@ -322,14 +336,14 @@ flag = 4;                   % Y0 flag;
 %   the 2nd column are the debris surface nodes excluding the start and the
 %   end?
 surf_index1 = 2*n_basal + 1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
-surf_index2 = 2*n_basal + n_surface - 1; %+1 for indexing? -1 to skip the last
+surf_index2 = 2*n_basal + n_surface-1; %+1 for indexing? -1 to skip the last
 debris_index1 = (2*n_basal + 2*n_surface) + 1 + 1; %+1 for indexing, +1 to skip the first 
 debris_index2 = 2*n_basal + 2*n_surface + n_debris - 1;
 indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
 
 %preallocate
-y0header_debris = zeros(length(indices),3);
-y0facets_debris = zeros(length(indices),5);
+y0header_debris = NaN*ones(length(indices),3);
+y0facets_debris = NaN*ones(length(indices),5);
 
 % Debris Y0
 for f = 1 : length(indices)-1
@@ -357,9 +371,9 @@ flag = 8;                   % Y1 flag;
 %   the 2nd column are the debris surface nodes excluding the start and the
 %   end?
 surf_index1 = 2*n_basal + n_surface + 1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
-surf_index2 = 2*n_basal + 2*n_surface - 1; %+1 for indexing, -1 to skip the last
+surf_index2 = 2*n_basal + 2*n_surface -1; %+1 for indexing
 debris_index1 = (2*n_basal + 2*n_surface) + n_debris + 1 + 1; %+1 for indexing, +1 to skip the first 
-debris_index2 = 2*n_basal + 2*n_surface + 2*n_debris - 1 ; %+1 for indexing? I think it may be unnecessary. -1 to skip the last
+debris_index2 = 2*n_basal + 2*n_surface + 2*n_debris - 1 ; % -1 to skip the last
 indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
 
 %preallocate
@@ -395,7 +409,7 @@ yTRIhead_debris(1,:) = [1 0 flag];
 yTRIface_debris(1,:) = [3      2*n_basal+1+(n_surface-n_debris)     2*n_basal+2+(n_surface - n_debris)   (2*n_basal+2*n_surface+1)]; %not sure what the first numbers are here
 % right:
 yTRIhead_debris(2,:) = [1 0 flag];
-yTRIface_debris(2,:) = [3      (2*n_basal+n_surface-1)   2*n_basal+n_surface   (2*n_basal+2*n_surface+n_debris)]; %what does the 3 mean
+yTRIface_debris(2,:) = [3      (2*n_basal+n_surface)   (2*n_basal+2*n_surface+n_debris-1)  (2*n_basal+2*n_surface+n_debris)]; %what does the 3 mean
 
 % Y1 (back) triangles 
 flag = 8;
