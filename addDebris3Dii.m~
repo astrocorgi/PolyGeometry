@@ -59,7 +59,6 @@ glacier_width = 100;                        % width between Y0 / Y1 faces
 
 n_basal = length(basal);        %num basal nodes
 n_surface = length(surface);    %num surface nodes
-n_debris = length(xdebris);
 %ib = 1:length(x);               % this is a single index of basal nodes
 %is = 1:length(x_surface);       % this is a single index of surface nodes
 
@@ -106,7 +105,7 @@ end;
 
 % DEBRIS nodes: ----------------------------------------------------------
 % front side:
-for i = (2*n_basal) + 1 : (2*n_basal) + n_debris
+for i = (2*n_basal) + 1 : (2*n_basal) + 
     ii = i-2*n_basal;               %going backwards from end of front side surface
     nodes(i,1) = i;                 % this is the node number
     nodes(i,2) = x_surface(ii);     % x location of this node
@@ -114,7 +113,7 @@ for i = (2*n_basal) + 1 : (2*n_basal) + n_debris
     nodes(i,4) = zdebris(ii);       % z, surface (I think this should be debris surface)
 end;
 % back side (bounds of loop are written this way for clarity):
-for i = (2*n_basal + 2*n_surface) + 1 : (2*n_basal + 2*n_surface) + n_debris
+for i = (2*n_basal + 2*n_surface) + 1 : (2*n_basal + 2*n_surface) + n_surface
     ii = i-(2*n_basal)-2*n_surface;
     nodes(i,1) = i;                 % this is the node number
     nodes(i,2) = x_surface(ii);          % x
