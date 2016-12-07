@@ -30,11 +30,11 @@ x = linspace(0,L,x_nodes);               % X-dir
 
 basal = 300*exp(-x/400);            % basal topo
 a =  -28.3223;                      % ???
-n_basal = 2.37e-03;                       % ???
+n_basal = 2.37e-03;                 % ???
 c = 328.3223;                       % ???
-surface = a*exp(n_basal*x)+c;             % surface topo
+surface = a*exp(n_basal*x)+c;       % surface topo
 surface = surface(2:end-1);         % trimming the surface topo
-x_surface = x(2:end-1);                  % x corresponding to # surface pts.
+x_surface = x(2:end-1);             % x corresponding to # surface pts.
 %% dz determination
 
 debris_start = 300;
@@ -52,7 +52,7 @@ dz = m*xdebris; %y = mx, equal to thickness of debris on top of surface
 zdebris = zdebris + dz; 
 debris_end = [debris_thickness+xmax, basal(end)]; %[x, z]
 
-xdebris = [xdebris debris_end(1)];
+xdebris = [xdebris debris_end(1)+2*debris_thickness]; %Make it thicker at the base
 zdebris = [zdebris debris_end(2)];
 
 glacier_width = 100;                        % width between Y0 / Y1 faces
@@ -322,9 +322,9 @@ flag = 4;                   % Y0 flag;
 %   the 2nd column are the debris surface nodes excluding the start and the
 %   end?
 surf_index1 = 2*n_basal + 1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
-surf_index2 = 2*n_basal + 1 + n_surface - 1; %+1 for indexing, -1 to skip the last
+surf_index2 = 2*n_basal + n_surface - 1; %+1 for indexing? -1 to skip the last
 debris_index1 = (2*n_basal + 2*n_surface) + 1 + 1; %+1 for indexing, +1 to skip the first 
-debris_index2 = 2*n_basal + 2*n_surface + 1 + n_debris -1 ;
+debris_index2 = 2*n_basal + 2*n_surface + n_debris - 1;
 indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
 
 %preallocate
@@ -345,7 +345,7 @@ for f = 1 : length(indices)-1
 end
 
 
-% Y1D (front debris side) -------------------------------------------------
+% Y1D (back debris side) -------------------------------------------------
 % on the front side you'll have (d-1) quadrilateral elements and (2)
 % triangular elements (on the left and right sides -- deal w/ those last)
 flag = 8;                   % Y1 flag;
@@ -356,10 +356,10 @@ flag = 8;                   % Y1 flag;
 %   debris and at the ends
 %   the 2nd column are the debris surface nodes excluding the start and the
 %   end?
-surf_index1 = 2*n_basal + n_surface + +1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
-surf_index2 = 2*n_basal + 1 + 2*n_surface - 1; %+1 for indexing, -1 to skip the last
+surf_index1 = 2*n_basal + n_surface + 1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
+surf_index2 = 2*n_basal + 2*n_surface - 1; %+1 for indexing, -1 to skip the last
 debris_index1 = (2*n_basal + 2*n_surface) + n_debris + 1 + 1; %+1 for indexing, +1 to skip the first 
-debris_index2 = 2*n_basal + 2*n_surface + 1 + 2*n_debris - 1 ;
+debris_index2 = 2*n_basal + 2*n_surface + 2*n_debris - 1 ; %+1 for indexing? I think it may be unnecessary. -1 to skip the last
 indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
 
 %preallocate
@@ -379,6 +379,34 @@ for f = 1 : length(indices)-1
     y1facets_debris(f,5) = indices(f,2);        %  ._________. I(f+1,1)
 end
 
+%% Figure out debris layer triangular facets
+
+% Y0D / Y1D TRIANGULAR FACETS ON LEFT AND RIGHT SIDE ----------------------
+% there are 4 of these
+
+yTRIhead_debris = NaN*ones(4,3);
+yTRIface_debris = NaN*ones(4,4); % now we have 3 pts defining a facet, so 4 cols
+
+% Y0 (front) triangles
+flag = 4;
+
+% left:
+yTRIhead_debris(1,:) = [1 0 flag];
+yTRIface_debris(1,:) = [3      2*n_basal+1+(n_surface-n_debris)     2*n_basal+2+(n_surface - n_debris)   (2*n_basal+2*n_surface+1)]; %not sure what the first numbers are here
+% right:
+yTRIhead_debris(2,:) = [1 0 flag];
+yTRIface_debris(2,:) = [3      (2*n_basal+n_surface-1)   2*n_basal+n_surface   (2*n_basal+2*n_surface+n_debris)]; %what does the 3 mean
+
+% Y1 (back) triangles 
+flag = 8;
+
+% left:
+yTRIhead_debris(3,:) = [1 0 flag];
+yTRIface_debris(3,:) = [3      (2*n_basal+2*n_surface-n_debris+2)   (2*n_basal+2*n_surface-n_debris+1)   (2*n_basal+2*n_surface+n_debris+1)];    
+% right:
+yTRIhead_debris(4,:) = [1 0 flag];
+yTRIface_debris(4,:) = [3      (2*n_basal+2*n_surface)   (2*n_basal+2*n_surface-1) (2*n_basal+2*n_surface+2*n_debris)];
+
 %% BECAUSE C++ / TETGEN LIBRARY NUMBER EVERYTHING STARTING FROM 0, WE 
 %  SUBTRACT 1 EVERYWHERE.
 
@@ -387,19 +415,31 @@ header4 = [z0header;
           z1header;
           y0header;
           y1header;
-          debhead];
+          debhead;
+          y0header_debris;
+          y1header_debris];
 
 facets4 = [z0facets;
           z1facets;
           y0facets;
           y1facets
-          debface];
+          debface;
+          y0facets_debris;
+          y1facets_debris];
 
+tri_facets = [yTRIface;
+              yTRIface_debris];
+          
+tri_headers = [yTRIhead;
+               yTRIhead_debris];
+
+      
 % now subtract 1 from the node list:
 nodes(:,1) = nodes(:,1) - 1;
-% now subtract 1 from the facets4 and yTRIface lists:
+% now subtract 1 from the facets4 and yTRIface and yTRIface_debris lists:
 facets4 (:,2:5) = facets4 (:,2:5) - 1;
-yTRIface(:,2:4) = yTRIface(:,2:4) - 1;
+tri_facets(:,2:4) = tri_facets(:,2:4) - 1;
+
 
 %% NOW WE WRITE TO FILE
 format short g
@@ -417,27 +457,27 @@ for n = 1:length(nodes)
 end;
 
 % facet header:
-nofacets = [length(header4) + length(yTRIhead)];
-header = [nofacets 1];
+n_facets = length(header4) + length(tri_headers); %why are we counting facets by headers
+header = [n_facets 1];
 fmt    = '%d %d\n';
 fprintf(fid, fmt, header);
 
 % write quadrilateral facets 
 % (alternate header and facet row by row)
-quads = length(header4);
+n_quads = length(header4);
 fmthead  = '%d %d %d\n';
 fmtfacet = '%d %d %d %d %d\n';
-for n = 1:quads
+for n = 1:n_quads
     fprintf(fid, fmthead , header4(n,:));
     fprintf(fid, fmtfacet, facets4(n,:));
 end;
 
 % same for triangular elements:
-tris = length(yTRIhead);
+n_tris = length(tri_headers);
 fmtfacet = '%d %d %d %d\n';
-for n = 1:tris
-    fprintf(fid, fmthead , yTRIhead(n,:));
-    fprintf(fid, fmtfacet, yTRIface(n,:));
+for n = 1:n_tris
+    fprintf(fid, fmthead , tri_headers(n,:));
+    fprintf(fid, fmtfacet, tri_facets(n,:));
 end;
 
 % our mesh has 0 holes:
