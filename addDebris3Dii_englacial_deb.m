@@ -368,44 +368,52 @@ deb_englacial_header = NaN*ones(2,3);
 deb_englacial_facets = NaN*ones(2,5);
 
 %find the intersecting points for the interior debris layer
+%I mixed up Y and Z again. should probably fix and propagate through
 surf_left_x = x_surface(x_surface > englacial_debris_start);
 surf_left_y = surface(x_surface > englacial_debris_start);
 surf_left_x = surf_left_x(1);
 surf_left_y = surf_left_y(1);
+n_surf_lefta = getNode(nodes,surf_left_x,0,surf_left_y);
+n_surf_leftb = getNode(nodes,surf_left_x,100,surf_left_y);
+
 
 surf_right_x = x_surface(x_surface > englacial_debris_start + englacial_debris_thickness);
 surf_right_y = surface(x_surface > englacial_debris_start + englacial_debris_thickness);
 surf_right_x = surf_right_x(1);
 surf_right_y = surf_right_y(1);
+n_surf_righta = getNode(nodes,surf_right_x,0,surf_right_y);
+n_surf_rightb = getNode(nodes,surf_right_x,100,surf_right_y);
 
-basal_left_x = x(x<debris_start);
-basal_left_y = basal(x<debris_start);
+
+basal_left_x = x(x>debris_start);
+basal_left_y = basal(x>debris_start);
 basal_left_x = basal_left_x(1);
 basal_left_y = basal_left_y(1);
+n_basal_lefta = getNode(nodes,basal_left_x,0,basal_left_y);
+n_basal_leftb = getNode(nodes,basal_left_x,100,basal_left_y);
 
-basal_right_x = x(x<debris_start+englacial_debris_thickness);
-basal_right_y = basal(x<debris_start+englacial_debris_thickness);
+
+basal_right_x = x(x>debris_start+englacial_debris_thickness);
+basal_right_y = basal(x>debris_start+englacial_debris_thickness);
 basal_right_x = basal_right_x(1);
 basal_right_y = basal_right_y(1);
+n_basal_righta = getNode(nodes,basal_right_x,0,basal_right_y);
+n_basal_rightb = getNode(nodes,basal_right_x,100,basal_right_y);
 
-% there are only 3 facets for an inner debris band
+% there are only 2 facets for an inner debris band going all the way
+% through the glacier (top-to-bottom)
 
 % left:
 
 deb_englacial_header(1,:) = [1 0 0]; % there is no boundary flag for an internal facet
 
-deb_englacial_facets(1,:) = [4 nbl(1) nbl(2) nsl(2) nsl(1)];
-
- 
+deb_englacial_facets(1,:) = [4 n_basal_lefta n_basal_leftb n_surf_leftb n_surf_lefta];
 
 % right:
 
 deb_englacial_header(2,:) = [1 0 0]; % there is no boundary flag for an internal facet
 
-deb_englacial_facets(2,:) = [4 nbr(1) nbr(2) nsr(2) nsr(1)];
-
-
-
+deb_englacial_facets(2,:) = [4 n_basal_righta n_basal_rightb  n_surf_rightb n_surf_righta];
 
 %% DEBRIS FACETS left / right side ----------------------------------------
 % Y0D (front debris side) -------------------------------------------------
@@ -513,7 +521,8 @@ header4 = [z0header;
           y0header;
           y1header;
           y0header_debris;
-          y1header_debris];
+          y1header_debris;
+          deb_englacial_header];
 
 facets4 = [z0facets;
           z1facets;
@@ -521,7 +530,8 @@ facets4 = [z0facets;
           y0facets;
           y1facets;
           y0facets_debris;
-          y1facets_debris];
+          y1facets_debris
+          deb_englacial_facets];
 
 tri_facets = [yTRIface;
               yTRIface_debris];
@@ -594,22 +604,6 @@ for n = 1:REGIONS
 end;
 fclose(fid);
       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
