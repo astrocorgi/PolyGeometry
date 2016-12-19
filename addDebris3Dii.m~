@@ -15,7 +15,7 @@
 %%
 clear;clf;
 % first: what are you going to call this poly file?
-str = 'lense3D_2.poly';
+str = 'lense23D.poly';
 
 nd = 100;                           % number nodes in X-dir
 L = 1000;                           % length of domain in X-dir
@@ -136,11 +136,11 @@ end;
 % sr = 475; nsr = find((nodes(:,2) >= sr-dx) & (nodes(:,2) <= sr+dx)); 
 %           nsr = [nsr(5) nsr(7)]; % this is front / back side SURFACE
 % PLOT for sanity check:
-% plot3(nodes(:,2)  ,nodes(:,3)  ,nodes(:,4),'k.'); hold on;
-% plot3(nodes(nbl,2),nodes(nbl,3),nodes(nbl,4),'ro')
-% plot3(nodes(nsl,2),nodes(nsl,3),nodes(nsl,4),'ro')
-% plot3(nodes(nbr,2),nodes(nbr,3),nodes(nbr,4),'bs')
-% plot3(nodes(nsr,2),nodes(nsr,3),nodes(nsr,4),'bs')
+plot3(nodes(:,2)  ,nodes(:,3)  ,nodes(:,4),'k.'); hold on;
+plot3(nodes(nbl,2),nodes(nbl,3),nodes(nbl,4),'ro')
+plot3(nodes(nsl,2),nodes(nsl,3),nodes(nsl,4),'ro')
+plot3(nodes(nbr,2),nodes(nbr,3),nodes(nbr,4),'bs')
+plot3(nodes(nsr,2),nodes(nsr,3),nodes(nsr,4),'bs')
 
 %% ---------------------------- FACETS ---------------------------------%%
 
@@ -219,9 +219,8 @@ counter = 2;
 d1header = zeros(d,5);
 d1facets = zeros(d,5);
 
-index = nodes(:,2) < debrisStart & nodes(:,3) == width;
-no_debrisx = nodes(index,:);
-num_icemax = max(no_debrisx(:,1)); 
+no_debrisx = nodes(:,2) < debrisStart;
+no_debrisx = nodes(no
 
 %surface debris facets
 for f = (2*b + 2*s+1) : (2*b + 2*s + d) - 1
