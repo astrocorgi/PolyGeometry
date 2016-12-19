@@ -15,7 +15,7 @@
 %%
 clear;clf;
 % first: what are you going to call this poly file?
-str = 'lense3D_2.poly';
+str = 'lense3D_endeb.poly';
 
 x_nodes = 100;                           % number nodes in X-dir
 L = 1000;                                % length of domain in X-dir
@@ -38,7 +38,13 @@ x_surface = x(2:end-1);             % x corresponding to # surface pts.
 %% dz determination
 
 debris_start = 300;
+<<<<<<< HEAD
+debris_thickness = 20;
+englacial_debris_start = 350;
+englacial_debris_thickness = 20;
+=======
 debris_thickness = 10;
+>>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 xmax = max(x);
 
 
@@ -47,7 +53,7 @@ zdebris = [surface(x_surface > debris_start) basal(end)];
 
 %find the slope of the debris thickness increase
 m = debris_thickness/(xmax - debris_start);
-dz = m*xdebris; %y = mx, equal to thickness of debris on top of surface
+dz = m*(xdebris-debris_start); %y = mx, equal to thickness of debris on top of surface
 
 zdebris = zdebris + dz; 
 debris_end = [debris_thickness+xmax, basal(end)]; %[x, z]
@@ -57,34 +63,40 @@ zdebris = [zdebris debris_end(2)];
 
 glacier_width = 100;                        % width between Y0 / Y1 faces
 
-<<<<<<< HEAD
-b = length(bas);
-s = length(srf);
-d = length(xdebris); % number basal / surface nodes
-ib = [1:length(x)];                 % this is a single index of basal nodes
-is = [1:length(xsrf)];              % this is a single index of surface nodes
-=======
 n_basal = length(basal);        %num basal nodes
 n_surface = length(surface);    %num surface nodes
 n_debris = length(xdebris);
-%ib = 1:length(x);               % this is a single index of basal nodes
-%is = 1:length(x_surface);       % this is a single index of surface nodes
 
+<<<<<<< HEAD
+%
 
-%% Variables for important intersections
-
-int1_b = n_basal
-int2_b = 2*n_basal
-int3_s = 2*n_basal + 1
-int4_s = 2*n_basal + n_surface
-int5_s = 2*n_basal + n_surface + 1
-int6_s = 2*n_basal + 2*n_surface
-int7_d = 2*n_basal + 2*n_surface + 1
-int8_d = 2*n_basal + 2*n_surface + n_debris
-int9_d = 2*n_basal + 2*n_surface + n_debris + 1
-int10_d = 2*n_basal + 2*n_surface + 2*n_debris
+=======
 >>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
+% useful corner nodes:
 
+b1 = 1;
+b2 = n_basal;
+b3 = n_basal+1;
+b4 = 2*n_basal;
+
+s1 = 2*n_basal + 1;
+s2 = 2*n_basal + n_surface;
+s3 = 2*n_basal + n_surface + 1;
+s4 = 2*n_basal + 2*n_surface;
+
+d1 = 2*n_basal + 2*n_surface + 1;
+d2 = 2*n_basal + 2*n_surface + n_debris;
+d3 = 2*n_basal + 2*n_surface + n_debris + 1;
+d4 = 2*n_basal + 2*n_surface + 2*n_debris;
+
+ds1 = 2*n_basal + n_surface - n_debris + 3;
+ds2 = 2*n_basal + 2*n_surface - n_debris + 3;
+
+<<<<<<< HEAD
+ corners = [b1 b2 b3 b4 s1 s2 s3 s4 d1 d2 d3 d4 ds1 ds2];
+=======
+corners = [b1 b2 b3 b4 s1 s2 s3 s4 d1 d2 d3 d4 ds1 ds2];
+>>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 
 %% ---------------------------- NODES ----------------------------------%%
 nodes = NaN*ones(n_basal+n_basal+n_surface+n_surface+2*length(zdebris), 4);       % empty node matrix to be filled in
@@ -112,7 +124,7 @@ end;
 for i = (2*n_basal) + 1 : (2*n_basal) + n_surface
     ii = i-2*n_basal;
     nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = x(ii);          % x
+    nodes(i,2) = x_surface(ii);          % x
     nodes(i,3) = glacier_width;                 % y, back face
     nodes(i,4) = surface(ii);           % z, surface
 end;
@@ -121,29 +133,13 @@ end;
 for i = (2*n_basal + n_surface) + 1 : (2*n_basal + 2*n_surface)
     ii = i-(2*n_basal)-n_surface;
     nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = x(ii);          % x
+    nodes(i,2) = x_surface(ii);          % x
     nodes(i,3) = 0;                 % y, back face
     nodes(i,4) = surface(ii);           % z, surface
 end;
 
 % DEBRIS nodes: ----------------------------------------------------------
 % front side:
-<<<<<<< HEAD
-for i = (2*b) + 2*s + 1 : (2*b) + (2*s) + d
-    ii = i-2*b-2*s;
-    nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = xdebris(ii);          % x
-    nodes(i,3) = width;                 % y, back face
-    nodes(i,4) = ydebris(ii);           % z, surface
-end;
-% back side (bounds of loop are written this way for clarity):
-for i = (2*b + 2*s) + d + 1 : (2*b + 2*s) + 2*d
-    ii = i-(2*b)-2*s-d;
-    nodes(i,1) = i;                 % this is the node number
-    nodes(i,2) = xdebris(ii);          % x
-    nodes(i,3) = 0;                 % y, back face
-    nodes(i,4) = ydebris(ii);           % z, surface
-=======
 for i = (2*n_basal + 2*n_surface) + 1 : (2*n_basal + 2*n_surface) + n_debris
     ii = i-2*n_basal-2*n_surface;               %incrementing through this section only
     nodes(i,1) = i;                 % this is the node number
@@ -158,41 +154,11 @@ for i = (2*n_basal + 2*n_surface + n_debris) + 1 : (2*n_basal + 2*n_surface) + 2
     nodes(i,2) = xdebris(ii);     % x
     nodes(i,3) = 0;                 % y, back face
     nodes(i,4) = zdebris(ii);       % z, surface
->>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 end;
 
-
-% DEBRIS nodes: -----------------------------------------------------------
-% we don't need to add any nodes, just select a left / right position for
-% the surface and basal sides
-
-<<<<<<< HEAD
-% dx = mean(diff(x));
-% bl = 400; nbl = find((nodes(:,2) >= bl-dx) & (nodes(:,2) <= bl+dx)); 
-%           nbl = [nbl(1) nbl(3)]; % this is front / back side BOTTOM
-% br = 450; nbr = find((nodes(:,2) >= br-dx) & (nodes(:,2) <= br+dx)); 
-%           nbr = [nbr(1) nbr(3)]; % this is front / back side BOTTOM
-% sl = 425; nsl = find((nodes(:,2) >= sl-dx) & (nodes(:,2) <= sl+dx)); 
-%           nsl = [nsl(5) nsl(7)]; % this is front / back side SURFACE
-% sr = 475; nsr = find((nodes(:,2) >= sr-dx) & (nodes(:,2) <= sr+dx)); 
-%           nsr = [nsr(5) nsr(7)]; % this is front / back side SURFACE
-=======
-dx = mean(diff(x));
-bl = 400; nbl = find((nodes(:,2) >= bl-dx) & (nodes(:,2) <= bl+dx)); %basal left?
-          nbl = [nbl(1) nbl(3)]; % this is front / back side BOTTOM
-br = 450; nbr = find((nodes(:,2) >= br-dx) & (nodes(:,2) <= br+dx)); %basal right?
-          nbr = [nbr(1) nbr(3)]; % this is front / back side BOTTOM
-sl = 425; nsl = find((nodes(:,2) >= sl-dx) & (nodes(:,2) <= sl+dx)); %surface left?
-          nsl = [nsl(5) nsl(7)]; % this is front / back side SURFACE
-sr = 475; nsr = find((nodes(:,2) >= sr-dx) & (nodes(:,2) <= sr+dx)); %surface right?
-          nsr = [nsr(5) nsr(7)]; % this is front / back side SURFACE
->>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 % PLOT for sanity check:
-% plot3(nodes(:,2)  ,nodes(:,3)  ,nodes(:,4),'k.'); hold on;
-% plot3(nodes(nbl,2),nodes(nbl,3),nodes(nbl,4),'ro')
-% plot3(nodes(nsl,2),nodes(nsl,3),nodes(nsl,4),'ro')
-% plot3(nodes(nbr,2),nodes(nbr,3),nodes(nbr,4),'bs')
-% plot3(nodes(nsr,2),nodes(nsr,3),nodes(nsr,4),'bs')
+plot3(nodes(:,2)  ,nodes(:,3)  ,nodes(:,4),'k.', 'MarkerSize', 20); hold on;
+plot3(nodes(corners,2)  ,nodes(corners,3)  ,nodes(corners,4),'ro'); hold on;
 
 %% ---------------------------- FACETS ---------------------------------%%
 
@@ -213,13 +179,13 @@ for f = 1 : n_basal-1
     z0facets(f,1) = 4;      % # of points to follow (4, it's a quadrilateral)
                             % "listed in this order" (follows right-hand
                             % rule, normal vector OUTWARD):
-    z0facets(f,2) = f+1;       %   b+f----b+f+1
-    z0facets(f,3) = f;         %   |   Z0   |
+    z0facets(f,2) = f+1;             %   b+f----b+f+1
+    z0facets(f,3) = f;               %   |   Z0   |
     z0facets(f,4) = f+n_basal;       %   |        |
     z0facets(f,5) = f+1+n_basal;     %   f------f+1
 end;
 
-% Z1 (surface) ------------------------------------------------------------
+% Z1 ice (surface) ------------------------------------------------------------
 % z1 face next: you will have (s-1) + 1 (left side) + 1 (right side) quadrilateral faces
 z1header = NaN*ones(1 + n_surface-1 + 1 ,3); % 3 numbers make up a header
 z1facets = NaN*ones(1 + n_surface-1 + 1 ,4); % 1 number saying the number of nodes we'll have
@@ -231,85 +197,100 @@ z1header(1,1) = 1;
 z1header(1,2) = 0;
 z1header(1,3) = flag;
 
-z1facets(1,1) = 4;              %  (b+1)     (2b+s+1)
-z1facets(1,2) = 1;              %  ._________o
-z1facets(1,3) = 2*n_basal + 1;        %  |         |
+z1facets(1,1) = 4;                          %  (b+1)     (2b+s+1)
+z1facets(1,2) = 1;                            %  ._________o
+z1facets(1,3) = 2*n_basal + 1;                %  |         |
 z1facets(1,4) = 2*n_basal + n_surface + 1;    %  |(1)      |
-z1facets(1,5) = n_basal + 1;          %  ._________o (2b+1)
+z1facets(1,5) = n_basal + 1;                  %  ._________o (2b+1)
 
 counter = 2; % start after the first facet listed above
 
 % loop over surface
 for f = (2*n_basal + 1) : (2*n_basal + n_surface) - 1
     
-    if nodes(f,2) > debrisStart %check if we're behind debris layer start
-        flag = 0; 
-    else 
-        flag = 32; 
-    end
                              % Here's what the header means:
     z1header(counter,1) = 1;       % "1 facet follows this header"
     z1header(counter,2) = 0;       % "with 0 attributes"?
+    if (f >= ds1)
+        flag = 0;
+    end
     z1header(counter,3) = flag;    % "and this (Z0 = 16) flag"
 
 
     z1facets(counter,1) = 4;      % # of points to follow 
                             % "listed in this order" (follows right-hand
                             % rule, normal vector OUTWARD):
-    z1facets(counter,2) = f;        %   f+s----f+s+1
-    z1facets(counter,3) = f+1;      %   |        |
+    z1facets(counter,2) = f;                %   f+s----f+s+1
+    z1facets(counter,3) = f+1;              %   |        |
     z1facets(counter,4) = f+n_surface+1;    %   |        |
     z1facets(counter,5) = f+n_surface;      %   f------f+1
     
-    
-    
     counter = counter + 1;
 end;
-
-%initializing for loop over debris facets
-counter = 2;
-d1header = zeros(d,5);
-d1facets = zeros(d,5);
-
-index = nodes(:,2) < debrisStart & nodes(:,3) == width;
-no_debrisx = nodes(index,:);
-num_icemax = max(no_debrisx(:,1)); 
-
-%surface debris facets
-for f = (2*b + 2*s+1) : (2*b + 2*s + d) - 1
-    
-    flag = 32;
-                             % Here's what the header means:
-    d1header(counter,1) = 1;       % "1 facet follows this header"
-    d1header(counter,2) = 0;       % "with 0 attributes"?
-    d1header(counter,3) = flag;    % "and this (Z0 = 16) flag"
-
-
-    d1facets(counter,1) = 4;      % # of points to follow 
-                            % "listed in this order" (follows right-hand
-                            % rule, normal vector OUTWARD):
-    d1facets(counter,2) = f;        %   f+d----f+d+1
-    d1facets(counter,3) = f+1;      %   |        |
-    d1facets(counter,4) = f+d+1;    %   |        |
-    d1facets(counter,5) = f+d;      %   f------f+1
-    
-    
-    
-    counter = counter + 1;
-end;
-
-
 
 % end w/ right side
 z1header(end,1) = 1;
 z1header(end,2) = 0;
-z1header(end,3) = flag;
+z1header(end,3) = 0;
 
-z1facets(end,1) = 4;              %  (2b+2s)   (2b)
-z1facets(end,2) = n_basal;              %  o_________.
-z1facets(end,3) = 2*n_basal;            %  |         |
+z1facets(end,1) = 4;                            %  (2b+2s)   (2b)
+z1facets(end,2) = n_basal;                      %  o_________.
+z1facets(end,3) = 2*n_basal;                    %  |         |
 z1facets(end,4) = 2*n_basal + 2*n_surface;      %  |(2b+s)   |
 z1facets(end,5) = 2*n_basal + n_surface;        %  o_________. (b)
+
+% Z1 debris (surface) ------------------------------------------------------------
+% z1 face next: you will have (s-1) + 1 (left side) + 1 (right side) quadrilateral faces
+z1debris_header = NaN*ones(1 + n_debris  ,3); % 3 numbers make up a header
+z1debris_facets = NaN*ones(1 + n_debris  ,4); % 1 number saying the number of nodes we'll have
+                            % and 4 nodes comprising the actual facet
+flag = 32;                  % Z1 flag;
+
+% start w/ left side
+z1debris_header(1,1) = 1;
+z1debris_header(1,2) = 0;
+z1debris_header(1,3) = flag;
+
+z1debris_facets(1,1) = 4;                          
+z1debris_facets(1,2) = ds1-1;                         
+z1debris_facets(1,3) = d1;                
+z1debris_facets(1,4) = d3;   
+z1debris_facets(1,5) = ds2-1;                 
+
+counter = 2; % start after the first facet listed above
+
+% loop over surface
+for f = d1 : d2 - 1
+    
+                             % Here's what the header means:
+    z1debris_header(counter,1) = 1;       % "1 facet follows this header"
+    z1debris_header(counter,2) = 0;       % "with 0 attributes"?
+    z1debris_header(counter,3) = flag;    % "and this (Z0 = 32) flag"
+
+
+    z1debris_facets(counter,1) = 4;      % # of points to follow 
+                            % "listed in this order" (follows right-hand
+                            % rule, normal vector OUTWARD):
+    z1debris_facets(counter,2) = f;                %   f+s----f+s+1
+    z1debris_facets(counter,3) = f+1;              %   |        |
+    z1debris_facets(counter,4) = f+n_debris+1;     %   |        |
+    z1debris_facets(counter,5) = f+n_debris;       %   f------f+1
+    
+    counter = counter + 1;
+end;
+
+% last facet tucks under, connecting last debris node to last basal ice
+% mode
+flag = 16;
+z1debris_header(end,1) = 1;
+z1debris_header(end,2) = 0;
+z1debris_header(end,3) = flag;
+
+z1debris_facets(end,1) = 4;                          
+z1debris_facets(end,2) = d4;                         
+z1debris_facets(end,3) = d2;                
+z1debris_facets(end,4) = b2;   
+z1debris_facets(end,5) = b4;
 
 % Y0 (front side) ---------------------------------------------------------
 % on the front side you'll have (s-1) quadrilateral elements and (2)
@@ -390,38 +371,80 @@ yTRIface(3,:) = [3      (n_basal+2)   (n_basal+1)   (2*n_basal+n_surface+1)];
 yTRIhead(4,:) = [1 0 flag];
 yTRIface(4,:) = [3      (2*n_basal)   (2*n_basal-1) (2*n_basal+2*n_surface)];
 
-%% DEBRIS FACETS left / right side -----------------------------------------
-debhead = NaN*ones(2,3);
-debface = NaN*ones(2,5);
-% there are only 2 facets for an inner debris band
+%% DEBRIS FACETS interior        ------------------------------------------
+
+deb_englacial_header = NaN*ones(2,3); 
+
+deb_englacial_facets = NaN*ones(2,5);
+
+%find the intersecting points for the interior debris layer
+%I mixed up Y and Z again. should probably fix and propagate through
+surf_left_x = x_surface(x_surface > englacial_debris_start);
+surf_left_y = surface(x_surface > englacial_debris_start);
+surf_left_x = surf_left_x(1);
+surf_left_y = surf_left_y(1);
+n_surf_lefta = getNode(nodes,surf_left_x,0,surf_left_y);
+n_surf_leftb = getNode(nodes,surf_left_x,100,surf_left_y);
+
+
+surf_right_x = x_surface(x_surface > englacial_debris_start + englacial_debris_thickness);
+surf_right_y = surface(x_surface > englacial_debris_start + englacial_debris_thickness);
+surf_right_x = surf_right_x(1);
+surf_right_y = surf_right_y(1);
+n_surf_righta = getNode(nodes,surf_right_x,0,surf_right_y);
+n_surf_rightb = getNode(nodes,surf_right_x,100,surf_right_y);
+
+
+basal_left_x = x(x>debris_start);
+basal_left_y = basal(x>debris_start);
+basal_left_x = basal_left_x(1);
+basal_left_y = basal_left_y(1);
+n_basal_lefta = getNode(nodes,basal_left_x,0,basal_left_y);
+n_basal_leftb = getNode(nodes,basal_left_x,100,basal_left_y);
+
+
+basal_right_x = x(x>debris_start+englacial_debris_thickness);
+basal_right_y = basal(x>debris_start+englacial_debris_thickness);
+basal_right_x = basal_right_x(1);
+basal_right_y = basal_right_y(1);
+n_basal_righta = getNode(nodes,basal_right_x,0,basal_right_y);
+n_basal_rightb = getNode(nodes,basal_right_x,100,basal_right_y);
+
+% there are only 2 facets for an inner debris band going all the way
+% through the glacier (top-to-bottom)
+
 % left:
-debhead(1,:) = [1 0 0]; % there is no boundary flag for an internal facet
-debface(1,:) = [4 nbl(1) nbl(2) nsl(2) nsl(1)];
+
+deb_englacial_header(1,:) = [1 0 0]; % there is no boundary flag for an internal facet
+
+deb_englacial_facets(1,:) = [4 n_basal_lefta n_basal_leftb n_surf_leftb n_surf_lefta];
 
 % right:
-debhead(2,:) = [1 0 0]; % there is no boundary flag for an internal facet
-debface(2,:) = [4 nbr(1) nbr(2) nsr(2) nsr(1)];
+
+deb_englacial_header(2,:) = [1 0 0]; % there is no boundary flag for an internal facet
+
+deb_englacial_facets(2,:) = [4 n_basal_righta n_basal_rightb  n_surf_rightb n_surf_righta];
+
+%% DEBRIS FACETS left / right side ----------------------------------------
 
 % Y0D (front debris side) -------------------------------------------------
 % on the front side you'll have (d-1) quadrilateral elements and (2)
 % triangular elements (on the left and right sides -- deal w/ those last)
 flag = 4;                   % Y0 flag;
 
-
 % this is a really important array: 
 %   the 1st column are front surface nodes excluding those before the
 %   debris and at the ends
 %   the 2nd column are the debris surface nodes excluding the start and the
 %   end?
-surf_index1 = 2*n_basal + 1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
-surf_index2 = 2*n_basal + n_surface-1; %+1 for indexing? -1 to skip the last
-debris_index1 = (2*n_basal + 2*n_surface) + 1 + 1; %+1 for indexing, +1 to skip the first 
-debris_index2 = 2*n_basal + 2*n_surface + n_debris - 1;
-indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
+surf_indices = [(ds1:s2) b2]; %+1 for indexing, +1 to skip the first
+debris_indices = [d1:d2-1]; %+1 for indexing, +1 to skip the first 
+
+indices = [surf_indices' debris_indices']; % call it I in the pic below
 
 %preallocate
-y0header_debris = NaN*ones(length(indices),3);
-y0facets_debris = NaN*ones(length(indices),5);
+y0header_debris = NaN*ones(length(indices)-1,3);
+y0facets_debris = NaN*ones(length(indices)-1,5);
 
 % Debris Y0
 for f = 1 : length(indices)-1
@@ -431,9 +454,9 @@ for f = 1 : length(indices)-1
 
     y0facets_debris(f,1) = 4;                   %  I(f,2)   I(f+1,2)
     y0facets_debris(f,2) = indices(f,1);        %  o_________o
-    y0facets_debris(f,3) = indices(f+1,1);      %  |         |
+    y0facets_debris(f,3) = indices(f,2);      %  |         |
     y0facets_debris(f,4) = indices(f+1,2);      %  |I(f,1)   |
-    y0facets_debris(f,5) = indices(f,2);        %  ._________. I(f+1,1)
+    y0facets_debris(f,5) = indices(f+1,1);        %  ._________. I(f+1,1)
 end
 
 
@@ -448,15 +471,15 @@ flag = 8;                   % Y1 flag;
 %   debris and at the ends
 %   the 2nd column are the debris surface nodes excluding the start and the
 %   end?
-surf_index1 = 2*n_basal + n_surface + 1 + (n_surface - n_debris) + 1; %+1 for indexing, +1 to skip the first
-surf_index2 = 2*n_basal + 2*n_surface -1; %+1 for indexing
-debris_index1 = (2*n_basal + 2*n_surface) + n_debris + 1 + 1; %+1 for indexing, +1 to skip the first 
-debris_index2 = 2*n_basal + 2*n_surface + 2*n_debris - 1 ; % -1 to skip the last
-indices = [(surf_index1:surf_index2)' (debris_index1:debris_index2)']; % call it I in the pic below
+
+surf_indices = [(ds2:s4) b4];
+debris_indices = [d3:d4-1];
+
+indices = [surf_indices' debris_indices']; % call it I in the pic below
 
 %preallocate
-y1header_debris = zeros(length(indices),3);
-y1facets_debris = zeros(length(indices),5);
+y1header_debris = zeros(length(indices)-1,3);
+y1facets_debris = zeros(length(indices)-1,5);
 
 % Debris Y0
 for f = 1 : length(indices)-1
@@ -484,20 +507,20 @@ flag = 4;
 
 % left:
 yTRIhead_debris(1,:) = [1 0 flag];
-yTRIface_debris(1,:) = [3      2*n_basal+1+(n_surface-n_debris)     2*n_basal+2+(n_surface - n_debris)   (2*n_basal+2*n_surface+1)]; %not sure what the first numbers are here
+yTRIface_debris(1,:) = [3 d1 ds1 ds1-1]; %not sure what the first numbers are here
 % right:
 yTRIhead_debris(2,:) = [1 0 flag];
-yTRIface_debris(2,:) = [3      (2*n_basal+n_surface)   (2*n_basal+2*n_surface+n_debris-1)  (2*n_basal+2*n_surface+n_debris)]; %what does the 3 mean
+yTRIface_debris(2,:) = [3 b2 d2-1 d2]; %what does the 3 mean
 
 % Y1 (back) triangles 
 flag = 8;
 
 % left:
 yTRIhead_debris(3,:) = [1 0 flag];
-yTRIface_debris(3,:) = [3      (2*n_basal+2*n_surface-n_debris+2)   (2*n_basal+2*n_surface-n_debris+1)   (2*n_basal+2*n_surface+n_debris+1)];    
+yTRIface_debris(3,:) = [3 d3 ds2-1 ds2];    
 % right:
 yTRIhead_debris(4,:) = [1 0 flag];
-yTRIface_debris(4,:) = [3      (2*n_basal+2*n_surface)   (2*n_basal+2*n_surface-1) (2*n_basal+2*n_surface+2*n_debris)];
+yTRIface_debris(4,:) = [3 d4 d4-1 b4];
 
 %% BECAUSE C++ / TETGEN LIBRARY NUMBER EVERYTHING STARTING FROM 0, WE 
 %  SUBTRACT 1 EVERYWHERE.
@@ -505,18 +528,21 @@ yTRIface_debris(4,:) = [3      (2*n_basal+2*n_surface)   (2*n_basal+2*n_surface-
 % concatenate all the header / facet lists for QUADRILATERAL ELEMENTS:
 header4 = [z0header;
           z1header;
+          z1debris_header;
           y0header;
           y1header;
-          debhead;
           y0header_debris;
-          y1header_debris];
-
+          y1header_debris;
+          deb_englacial_header];
+      
 facets4 = [z0facets;
           z1facets;
+          z1debris_facets;
           y0facets;
-          y1facets
-          debface;
+          y1facets;
           y0facets_debris;
+          y1facets_debris
+          deb_englacial_facets];
           y1facets_debris];
 
 tri_facets = [yTRIface;
@@ -576,62 +602,16 @@ end;
 fprintf(fid, '%d\n', 0);
 
 % number of regions?
-REGIONS = 3; % ICE --- ROCK --- ICE
+REGIONS = 2; % ICE --- ROCK --- ICE
 fprintf(fid, '%d\n', REGIONS);
 
 % region description:
-%         [region #     x0      y0          z0                      nmat    maximum elem. size]
-regions = [0            bl-dx   glacier_width/2     nodes(nbl(1)-3,4)+dx     0           1e9;
-           1            bl+dx   glacier_width/2     nodes(nbr(1)-2,4)+dx     1           1e9;
-           2            br+dx   glacier_width/2     nodes(nbr(1)+5,4)+dx     0           1e9];
+%         [region #     x0        y0                z0      nmat    maximum elem. size]
+regions = [0            mean(x)   glacier_width/2   100     0           1e9;
+           1            mean(x)   glacier_width/2   240     1           1e9];
 
 fmt = '%d %f %f %f %d %f\n';
 for n = 1:REGIONS
     fprintf(fid,fmt,regions(n,:));
 end;
 fclose(fid);
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
