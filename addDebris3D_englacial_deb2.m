@@ -38,13 +38,10 @@ x_surface = x(2:end-1);             % x corresponding to # surface pts.
 %% dz determination
 
 debris_start = 300;
-<<<<<<< HEAD
 debris_thickness = 20;
 englacial_debris_start = 350;
 englacial_debris_thickness = 20;
-=======
 debris_thickness = 10;
->>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 xmax = max(x);
 
 
@@ -53,7 +50,7 @@ zdebris = [surface(x_surface > debris_start) basal(end)];
 
 %find the slope of the debris thickness increase
 m = debris_thickness/(xmax - debris_start);
-dz = m*(xdebris-debris_start); %y = mx, equal to thickness of debris on top of surface
+dz = m*(xdebris-debris_start+150); %y = mx, equal to thickness of debris on top of surface
 
 zdebris = zdebris + dz; 
 debris_end = [debris_thickness+xmax, basal(end)]; %[x, z]
@@ -67,11 +64,6 @@ n_basal = length(basal);        %num basal nodes
 n_surface = length(surface);    %num surface nodes
 n_debris = length(xdebris);
 
-<<<<<<< HEAD
-%
-
-=======
->>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 % useful corner nodes:
 
 b1 = 1;
@@ -92,11 +84,7 @@ d4 = 2*n_basal + 2*n_surface + 2*n_debris;
 ds1 = 2*n_basal + n_surface - n_debris + 3;
 ds2 = 2*n_basal + 2*n_surface - n_debris + 3;
 
-<<<<<<< HEAD
- corners = [b1 b2 b3 b4 s1 s2 s3 s4 d1 d2 d3 d4 ds1 ds2];
-=======
 corners = [b1 b2 b3 b4 s1 s2 s3 s4 d1 d2 d3 d4 ds1 ds2];
->>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 
 %% ---------------------------- NODES ----------------------------------%%
 nodes = NaN*ones(n_basal+n_basal+n_surface+n_surface+2*length(zdebris), 4);       % empty node matrix to be filled in
@@ -157,8 +145,7 @@ for i = (2*n_basal + 2*n_surface + n_debris) + 1 : (2*n_basal + 2*n_surface) + 2
 end;
 
 % PLOT for sanity check:
-plot3(nodes(:,2)  ,nodes(:,3)  ,nodes(:,4),'k.', 'MarkerSize', 20); hold on;
-plot3(nodes(corners,2)  ,nodes(corners,3)  ,nodes(corners,4),'ro'); hold on;
+plot3(nodes(:,2)  ,nodes(:,3)  ,nodes(:,4),'k.', 'MarkerSize', 10); hold on;
 
 %% ---------------------------- FACETS ---------------------------------%%
 
@@ -425,6 +412,12 @@ deb_englacial_header(2,:) = [1 0 0]; % there is no boundary flag for an internal
 
 deb_englacial_facets(2,:) = [4 n_basal_righta n_basal_rightb  n_surf_rightb n_surf_righta];
 
+%Add to plot of debris nodes
+x_intersects = [basal_left_x,basal_right_x,surf_left_x,surf_right_x];
+y_intersects = [basal_left_y,basal_right_y,surf_left_y,surf_right_y];
+plot3(x_intersects, [0 0 0 0]  ,y_intersects,'ro'); hold on;
+plot3(x_intersects, [100 100 100 100], y_intersects,'ro'); hold on;
+
 %% DEBRIS FACETS left / right side ----------------------------------------
 
 % Y0D (front debris side) -------------------------------------------------
@@ -543,7 +536,6 @@ facets4 = [z0facets;
           y0facets_debris;
           y1facets_debris
           deb_englacial_facets];
-          y1facets_debris];
 
 tri_facets = [yTRIface;
               yTRIface_debris];
