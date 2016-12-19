@@ -38,9 +38,13 @@ x_surface = x(2:end-1);             % x corresponding to # surface pts.
 %% dz determination
 
 debris_start = 300;
+<<<<<<< HEAD
 debris_thickness = 20;
 englacial_debris_start = 350;
 englacial_debris_thickness = 20;
+=======
+debris_thickness = 10;
+>>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 xmax = max(x);
 
 
@@ -63,8 +67,11 @@ n_basal = length(basal);        %num basal nodes
 n_surface = length(surface);    %num surface nodes
 n_debris = length(xdebris);
 
+<<<<<<< HEAD
 %
 
+=======
+>>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 % useful corner nodes:
 
 b1 = 1;
@@ -85,7 +92,11 @@ d4 = 2*n_basal + 2*n_surface + 2*n_debris;
 ds1 = 2*n_basal + n_surface - n_debris + 3;
 ds2 = 2*n_basal + 2*n_surface - n_debris + 3;
 
+<<<<<<< HEAD
  corners = [b1 b2 b3 b4 s1 s2 s3 s4 d1 d2 d3 d4 ds1 ds2];
+=======
+corners = [b1 b2 b3 b4 s1 s2 s3 s4 d1 d2 d3 d4 ds1 ds2];
+>>>>>>> 435cc4432ace1c297d965352c9428918ea6a64d9
 
 %% ---------------------------- NODES ----------------------------------%%
 nodes = NaN*ones(n_basal+n_basal+n_surface+n_surface+2*length(zdebris), 4);       % empty node matrix to be filled in
@@ -360,7 +371,6 @@ yTRIface(3,:) = [3      (n_basal+2)   (n_basal+1)   (2*n_basal+n_surface+1)];
 yTRIhead(4,:) = [1 0 flag];
 yTRIface(4,:) = [3      (2*n_basal)   (2*n_basal-1) (2*n_basal+2*n_surface)];
 
-
 %% DEBRIS FACETS interior        ------------------------------------------
 
 deb_englacial_header = NaN*ones(2,3); 
@@ -416,6 +426,7 @@ deb_englacial_header(2,:) = [1 0 0]; % there is no boundary flag for an internal
 deb_englacial_facets(2,:) = [4 n_basal_righta n_basal_rightb  n_surf_rightb n_surf_righta];
 
 %% DEBRIS FACETS left / right side ----------------------------------------
+
 % Y0D (front debris side) -------------------------------------------------
 % on the front side you'll have (d-1) quadrilateral elements and (2)
 % triangular elements (on the left and right sides -- deal w/ those last)
@@ -523,7 +534,7 @@ header4 = [z0header;
           y0header_debris;
           y1header_debris;
           deb_englacial_header];
-
+      
 facets4 = [z0facets;
           z1facets;
           z1debris_facets;
@@ -532,6 +543,7 @@ facets4 = [z0facets;
           y0facets_debris;
           y1facets_debris
           deb_englacial_facets];
+          y1facets_debris];
 
 tri_facets = [yTRIface;
               yTRIface_debris];
@@ -603,32 +615,3 @@ for n = 1:REGIONS
     fprintf(fid,fmt,regions(n,:));
 end;
 fclose(fid);
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
