@@ -75,14 +75,40 @@ end;
 
 %% Facets
 
-xmin_debris = x_surface(x_surface>debris_start);
-debris_intersect = getNode(nodes,xmin_debris(1,2),xmin_debris(1,3));
+debris_intersect =  n_basal + n_debris;
+
+facets = NaN*ones(n_basal+n_surface+length(zdebris)+1,4); %allocate
+point_num = 0;
+
+%Surface and basal facets
+for i = 1 : n_basal + n_surface - 1
+    facets(i,:) = [point_num nodes(i,1) nodes(i+1,1) NaN];
+    point_num = point_num + 1;
+end
+
+%connect last surface node to first basal node
+facets(n_basal + n_surface,:) = [point_num nodes(n_basal+n_surface-1,1) nodes(1,1) NaN];
+point_num = point_num + 1;
+
+%connect first debris node to intersection with surface node
+facets(n_basal+n_surface+1,:) = [point_num debris_intersect nodes(n_surface+n_basal+1,1) NaN];
+point_num = point_num+1;
+
+%Debris layer facets
+while point_num < n_basal + n_surface + n_debris
+    if point_num == n_basal + n_surface + n_debris
+    facets(point_num+1,:) = [point_num nodes(point_num,1) nodes(point_num+1,1) NaN];
+    point_num = point_num+1;
+end
+
+%Assigning flags
+facets(1:n_basal,4) = 16; %basal ice
+facets(n_basal+n_debris-1:n_basal+n_surface,4) = 32; %exposed surface ice
+facets(n_basal+1:(n_basal+length(zdebris)),4) = 0;          %non-exposed surface ice
+facets(n_basal+n_surface+1:n_basal+n_surface+n_debris,4) = 32; %debris layer
 
 
-
-
-
-
+plot(nodes(:,2),nodes(:,3),'*');
 
 
 

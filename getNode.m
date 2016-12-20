@@ -5,7 +5,7 @@ function node_num = getNode(nodes,x,y,z) %gets
 %be exactly correct
 if nargin==3
     num = nodes(nodes(:,2)==x & nodes(:,3)==y,:);
-    node_num = num(1)-1; % subtract one because counting from zero
+    node_num = num(1);
 else if nargin == 4
         num = nodes(nodes(:,2)==x & nodes(:,3)==y & nodes(:,4)==z,:);
         node_num = num(1)-1; % subtract one because counting from zero
