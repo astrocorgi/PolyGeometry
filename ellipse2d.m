@@ -61,8 +61,8 @@ end;
 for i = (n_basal) + 1 : n_basal + n_surface
     ii = i-n_basal;
     nodes(i,1) = i-1;               % this is the node number
-    nodes(i,2) = x_surface(ii);     % x
-    nodes(i,3) = surface(ii);       % z, surface
+    nodes(i,2) = x_surface(n_surface+1-ii);     % x
+    nodes(i,3) = surface(n_surface+1-ii);       % z, surface
 end;
 
 % DEBRIS nodes: ----------------------------------------------------------
@@ -80,8 +80,8 @@ debris_intersect =  n_basal + n_debris;
 facets = NaN*ones(n_basal+n_surface+length(zdebris)+1,4); %allocate
 point_num = 0;
 
-%Surface and basal facets
-for i = 1 : n_basal + n_surface - 1
+%Surface and Basal facets
+for i = 1 : n_basal + n_surface-1
     facets(i,:) = [point_num nodes(i,1) nodes(i+1,1) NaN];
     point_num = point_num + 1;
 end
@@ -105,9 +105,9 @@ basal_intersect = n_basal;
 facets(point_num+1,:) = [point_num nodes(point_num,1) basal_intersect 16];
 
 %Assigning flags
-facets(1:n_basal,4) = 16; %basal ice
+facets(1:n_basal-1,4) = 16; %basal ice
 facets(n_basal+n_debris-1:n_basal+n_surface,4) = 32; %exposed surface ice
-facets(n_basal+1:(n_basal+length(zdebris)),4) = 0;          %non-exposed surface ice
+facets(n_basal:(n_basal+length(zdebris)),4) = 0;          %non-exposed surface ice
 facets(n_basal+n_surface+1:n_basal+n_surface+n_debris,4) = 32; %debris layer
 
 
