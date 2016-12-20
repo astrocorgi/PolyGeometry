@@ -51,7 +51,7 @@ nodes = NaN*ones(n_basal+n_surface+length(zdebris), 3); % empty node matrix to b
 % BASAL nodes: ------------------------------------------------------------
 for i = 1 : n_basal
     ii = i;
-    nodes(i,1) = i;                 % this is the node number
+    nodes(i,1) = i-1;               % this is the node number
     nodes(i,2) = x(ii);             % x
     nodes(i,3) = basal(ii);         % z, basal
     
@@ -60,7 +60,7 @@ end;
 % SURFACE nodes: ----------------------------------------------------------
 for i = (n_basal) + 1 : n_basal + n_surface
     ii = i-n_basal;
-    nodes(i,1) = i;                 % this is the node number
+    nodes(i,1) = i-1;               % this is the node number
     nodes(i,2) = x_surface(ii);     % x
     nodes(i,3) = surface(ii);       % z, surface
 end;
@@ -68,7 +68,7 @@ end;
 % DEBRIS nodes: ----------------------------------------------------------
 for i = (n_basal + n_surface) + 1 : (n_basal + n_surface) + n_debris
     ii = i-n_basal-n_surface;       %incrementing through this section only
-    nodes(i,1) = i;                 % this is the node number
+    nodes(i,1) = i-1;               % this is the node number
     nodes(i,2) = xdebris(ii);       % x location of this node
     nodes(i,3) = zdebris(ii);       % z, surface (I think this should be debris surface)
 end;
@@ -96,10 +96,13 @@ point_num = point_num+1;
 
 %Debris layer facets
 while point_num < n_basal + n_surface + n_debris
-    if point_num == n_basal + n_surface + n_debris
     facets(point_num+1,:) = [point_num nodes(point_num,1) nodes(point_num+1,1) NaN];
     point_num = point_num+1;
 end
+
+%Connecting the debris layer to the basal layer
+basal_intersect = n_basal;
+facets(point_num+1,:) = [point_num nodes(point_num,1) basal_intersect 16];
 
 %Assigning flags
 facets(1:n_basal,4) = 16; %basal ice
