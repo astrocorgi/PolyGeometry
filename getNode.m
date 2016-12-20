@@ -4,7 +4,7 @@ function node_num = getNode(nodes,x,y,z) %gets
 %and 3D files. The node must already exis and the x and y coordinates must
 %be exactly correct
 if nargin==3
-    num = nodes(nodes(:,2)==x & nodes(:,nodes(:,3)==y),:);
+    num = nodes(nodes(:,2)==x & nodes(:,3)==y,:);
     node_num = num(1)-1; % subtract one because counting from zero
 else if nargin == 4
         num = nodes(nodes(:,2)==x & nodes(:,3)==y & nodes(:,4)==z,:);
