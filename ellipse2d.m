@@ -101,7 +101,7 @@ while point_num < n_basal + n_surface + n_debris
 end
 
 %Connecting the debris layer to the basal layer
-basal_intersect = n_basal;
+basal_intersect = n_basal-1;
 facets(point_num+1,:) = [point_num nodes(point_num,1) basal_intersect 16];
 
 %Assigning flags

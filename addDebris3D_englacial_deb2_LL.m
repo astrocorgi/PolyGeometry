@@ -401,18 +401,21 @@ n_basal_rightb = getNode(nodes,basal_right_x,100,basal_right_y);
 % through the glacier (top-to-bottom)
 
 % left:
+nd = 45;
 
 deb_englacial_header(1,:) = [1 0 0]; % there is no boundary flag for an internal facet
 
 %deb_englacial_facets(1,:) = [4 n_basal_lefta n_basal_leftb n_surf_leftb n_surf_lefta];
-deb_englacial_facets(1,:) = [4 n_basal_lefta  n_surf_lefta n_surf_leftb n_basal_leftb ];
+deb_englacial_facets(1,:) = [4 y0facets(nd,2) y0facets(nd,5) y1facets(nd,4) y1facets(nd,3)];
+
 
 % right:
 
 deb_englacial_header(2,:) = [1 0 0]; % there is no boundary flag for an internal facet
 
-deb_englacial_facets(2,:) = [4 n_basal_righta n_basal_rightb  n_surf_rightb n_surf_righta];
-%deb_englacial_facets(2,:) = [4 n_basal_righta n_surf_righta n_surf_rightb n_basal_rightb ];
+%deb_englacial_facets(2,:) = [4 n_basal_righta n_basal_rightb  n_surf_rightb n_surf_righta];
+deb_englacial_facets(2,:) = [4 y0facets(nd,3) y0facets(nd,4) y1facets(nd,5) y1facets(nd,2)];
+
 
 %Add to plot of debris nodes
 x_intersects = [basal_left_x,basal_right_x,surf_left_x,surf_right_x];
