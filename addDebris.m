@@ -27,10 +27,10 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     index = upper_polyA(:,2) > debrisStart; %if the x-coordinate of the point is greater than where we want to start the debris layer...
     upper_xfilt_polyA = upper_polyA(index,:); %then store it in a new array
     x = upper_xfilt_polyA(:,2); %get the x coordinates of the upper facets 
-    y = m*(x-debrisStart) + upper_xfilt_polyA(:,3); %y = mx + b to create the new y coordinates for the debris layer
+    y = m*(x-debrisStart) + upper_xfilt_polyA(:,3) + 2; %y = mx + b to create the new y coordinates for the debris layer. Added +2 because the initial thickness was too thin and made weird mesh errors I think.
     
     %add one extra point for debris-layer hitting ground in front of ice
-    x(length(x)+1) = max(polyA(:,2))+debrisThickness*3; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
+    x(length(x)+1) = max(polyA(:,2))+debrisThickness*2; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
     y(length(y)+1) = min(polyA(:,3)); %this assumes the toe is the lowest point. this is almost always true, but still might bug out later
     
     %sort the x,y in ascending x
