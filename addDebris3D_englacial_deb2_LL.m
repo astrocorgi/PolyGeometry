@@ -15,7 +15,7 @@
 %%
 clear;clf;
 % first: what are you going to call this poly file?
-str = 'lense3D_endeb.poly';
+str = 'lense3D_endeb3.poly';
 
 x_nodes = 100;                           % number nodes in X-dir
 L = 1000;                                % length of domain in X-dir
@@ -55,7 +55,7 @@ dz = m*(xdebris-debris_start+150); %y = mx, equal to thickness of debris on top 
 zdebris = zdebris + dz; 
 debris_end = [debris_thickness+xmax, basal(end)]; %[x, z]
 
-xdebris = [xdebris debris_end(1)+1.5*debris_thickness]; %Make it a bit extra thick at the base by adding 1.5* debris thickness to x value
+xdebris = [xdebris debris_end(1)+1.1*debris_thickness]; %Make it a bit extra thick at the base by adding 1.5* debris thickness to x value
 zdebris = [zdebris debris_end(2)];
 
 glacier_width = 100;                        % width between Y0 / Y1 faces

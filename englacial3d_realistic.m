@@ -28,7 +28,7 @@ x = linspace(0,L,x_nodes);               % X-dir
 % srf = srf(2:end-1);
 % xsrf = x(2:end-1);
 
-basal = 300*exp(-x/400);            % basal position function
+basal = 300*exp(-x/500);            % basal position function
 a =  -28.3223;                      % ???
 n_basal = 2.37e-03;                 % ???
 c = 328.3223;                       % ???
