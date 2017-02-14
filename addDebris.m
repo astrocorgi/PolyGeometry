@@ -1,4 +1,4 @@
-function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThickness)
+function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThickness,output_file)
 %addDebris places a debris layer on top of a given poly file. Inputs are
 %the first half of a poly file (i.e. the X-Y coordinates) and the second
 %half of a poly file (facet definitions), where you want the debris to
@@ -70,12 +70,12 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
         end
     end
     
-    
+    %add an extra for the taper?
     
     %%Create the new polyB segment
-    %Find the points intersecting the debris layer (need to do n+1 for the ice intersection)
+    %Find the points intersecting the debris layer 
     xmin_index = x_pointnum(:,1)==min(x_pointnum(:,1));
-    intersect1 = x_pointnum(xmin_index,2);
+    intersect1 = x_pointnum(xmin_index,2)+2; % the plus 2 is to make it taper off nicely
     disp('debris startpoint');
     disp(intersect1);
     
@@ -106,5 +106,35 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     %disp(PolyA_Out);
     %disp('polyB new');
     %disp(PolyB_Out);
+    
+    %Find points for material determination
+    internal_index = PolyB_Out(:,4) == 0; %all the internal boundaries
+    internals = PolyB_Out(internal_index,:);
+    internal_midpoint = floor(length(internals(:,1))/2);
+    internal_node = internals(internal_midpoint,2);
+    [x_material,y_internal] = getCoord(PolyA_Out,internal_node);
+    y_mat1 = y_internal + 0.01;
+    y_mat2 = y_internal - 0.01;
+    
+    %Write poly file
+    fileID = fopen(output_file,'w');
+    fprintf(fileID,'%d %d %d %d \n', length(PolyA_Out(:,1)),2,0,0);%coordinate header
+    format_spec = '%d %.15g %.15g \n';
+    for k = 1:length(PolyA_Out(:,1))
+        fprintf(fileID,format_spec,PolyA_Out(k,1),PolyA_Out(k,2),PolyA_Out(k,3));
+    end
+    fprintf(fileID,'\n'); %add line break
+    fprintf(fileID,'%d %d \n',length(PolyB_Out(:,1)),1); %facet header
+    format_spec = '%d %d %d %d \n';
+    for k=1:length(PolyB_Out(:,1))
+        fprintf(fileID,format_spec,PolyB_Out(k,1),PolyB_Out(k,2),PolyB_Out(k,3),PolyB_Out(k,4));
+    end
+    fprintf(fileID,'%d \n',0); %material header
+    fprintf(fileID,'%d \n',2); %number of materials = 2
+    
+    fprintf(fileID,'%d %.15g %.15g %d %d \n',0,x_material,y_mat1,0,1e4);
+    fprintf(fileID,'%d %.15g %.15g %d %d \n',1,x_material,y_mat2,1,1e4);
+    
+    
 end
 
