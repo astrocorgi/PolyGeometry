@@ -1,0 +1,9 @@
+function flagPlot( input_args )
+%FLAGPLOT takes an input polyB file and plots the flag condition for each
+%node pairing. 
+%   Detailed explanation goes here
+
+
+
+end
+

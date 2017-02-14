@@ -27,7 +27,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     index = upper_polyA(:,2) > debrisStart; %if the x-coordinate of the point is greater than where we want to start the debris layer...
     upper_xfilt_polyA = upper_polyA(index,:); %then store it in a new array
     x = upper_xfilt_polyA(:,2); %get the x coordinates of the upper facets 
-    y = m*(x-debrisStart) + upper_xfilt_polyA(:,3); %y = mx + b to create the new y coordinates for the debris layer
+    y = m*(x-debrisStart) + upper_xfilt_polyA(:,3)+1; %y = mx + b to create the new y coordinates for the debris layer
     
     %add one extra point for debris-layer hitting ground in front of ice
     x(length(x)+1) = max(polyA(:,2))+debrisThickness*3; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
@@ -73,7 +73,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     
     
     %%Create the new polyB segment
-    %Find the points intersecting the debris layer
+    %Find the points intersecting the debris layer (need to do n+1 for the ice intersection)
     xmin_index = x_pointnum(:,1)==min(x_pointnum(:,1));
     intersect1 = x_pointnum(xmin_index,2);
     disp('debris startpoint');
@@ -92,8 +92,8 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     for i = 1:length(polyA_append(:,1))+1
         if (i==1) %the first facet starts at the debris/ice intersection
             polyB_append(i,:) = [point_num,polyA_append(i,1),intersect1,32];
-        elseif (i==length(polyA_append(:,1))+1)
-            polyB_append(i,:) = [point_num,polyA_append(i-1,1),intersect2,32];
+        elseif (i==length(polyA_append(:,1))+1) %connecting the ice to the debris toe, is a bottom facet
+            polyB_append(i,:) = [point_num,polyA_append(i-1,1),intersect2,16];
         else %otherwise the node connects to 
             polyB_append(i,:) = [point_num,polyA_append(i,1),polyA_append(i,1)-1,32];
         end
@@ -101,6 +101,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     end
     PolyA_Out = [polyA;polyA_append];
     PolyB_Out = [polyB;polyB_append];
+    flagPlot(PolyA_Out,PolyB_Out);
     %disp('polyA new');
     %disp(PolyA_Out);
     %disp('polyB new');
