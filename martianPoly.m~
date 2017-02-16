@@ -25,7 +25,7 @@ combined = deleteRow(combined,24.468051803350210);
 
 plot(combined(:,1),combined(:,2));
 
-combined = deleteRow(combined,24.006390448605742);
+combined = deleteRow9combined,24.006390448605742);
 
 
 function new_matrix = deleteRow(input_matrix,x_value)
@@ -33,7 +33,7 @@ function new_matrix = deleteRow(input_matrix,x_value)
     %according to an input x-value. Used to trim the measured geometry down
     %to something worth inputting to the model. Could potentially bug out
     %if two y values share an x value, but that seems really unlikely given
-    %the number of sig figs and by how we set up the arrays.
+    %the number of sig figs and by how we set o
     
     index = input_matrix(:,1)==x_value;
     input_matrix(index,:) = []; 
