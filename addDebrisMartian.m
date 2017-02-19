@@ -27,7 +27,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     index = upper_polyA(:,2) > debrisStart; %if the x-coordinate of the point is greater than where we want to start the debris layer...
     upper_xfilt_polyA = upper_polyA(index,:); %then store it in a new array
     x = upper_xfilt_polyA(:,2); %get the x coordinates of the upper facets 
-    y = m*(x-debrisStart) + upper_xfilt_polyA(:,3)+1; %y = mx + b to create the new y coordinates for the debris layer
+    y = m*(x-debrisStart) + upper_xfilt_polyA(:,3)+3; %y = mx + b to create the new y coordinates for the debris layer
     
     %add one extra point for debris-layer hitting ground in front of ice
     x(length(x)+1) = max(polyA(:,2))+debrisThickness*3; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
@@ -52,7 +52,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     legend('Debris layer','Initial poly geometry');
     title('Plot of the new poly x-y coordinates');
     
-    %change all "32" facets greater than the debris start
+    %change all "32" facets to 0 facets
     num = 1;
     for i=1:length(polyB(:,1))
         if polyB(i,4)==32
@@ -61,12 +61,12 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
             point_number = polyB(i,2);
             row_index = polyA(:,1) == point_number;
             x_val = polyA(row_index,2);
-            if x_val > debrisStart
+            %if x_val > debrisStart
                 %change the 32 flag to an internal flag (0)
                 polyB(i,4) = 0;
                 x_pointnum(num,:) = [x_val,point_number]; %collect the x and point number values into one array to use later
                 num = num+1;
-            end
+            %end
         end
     end
     
@@ -114,8 +114,8 @@ function [ PolyA_Out, PolyB_Out ] = addDebris(polyA,polyB,debrisStart,debrisThic
     internal_midpoint = floor(length(internals(:,1))/2);
     internal_node = internals(internal_midpoint,2);
     [x_material,y_internal] = getCoord(PolyA_Out,internal_node);
-    y_mat1 = y_internal + 0.01;
-    y_mat2 = y_internal - 0.01;
+    y_mat1 = y_internal - 0.01;
+    y_mat2 = y_internal + 0.01;
     
     %Write poly file
     fileID = fopen(output_file,'w');
