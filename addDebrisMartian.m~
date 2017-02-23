@@ -9,12 +9,11 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     close all
     facet_flag = polyB(:,4);
     uppers = facet_flag==32;
-    num = sum(uppers);
     
     polyB(facet_flag==32,4) = 0; %set all upper facets to 0's
     internal_nodes = polyB(facet_flag==32,2);
-    [internal_x, internal_y]= getCoord(polyA,internal_nodes);
-    x_pointnum = [internal_x,internal_nodes]; %collect the x and point number values for the top nodes into one array to use later
+    [internal_x  internal_y]= getCoord(polyA,internal_nodes);
+    x_pointnum(num,:) = [internal_x,internal_nodes]; %collect the x and point number values for the top nodes into one array to use later
         
     %use linear equation for debris thickness increase
     xmax = max(internal_x);
@@ -23,24 +22,24 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     m = delta_y/delta_x; %slope
     
     %create new points
-    y_new = m*(internal_x-debrisStart) + internal_y+4; %y = mx + b to create the new y coordinates for the debris layer
+    y = m*(internal_x-debrisStart) + internal_y+4; %y = mx + b to create the new y coordinates for the debris layer
     
     %add one extra point for debris-layer hitting ground in front of ice
     internal_x(length(internal_x)+1) = max(polyA(:,2))+debrisThickness*3; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
-    y_new(length(y_new)+1) = min(polyA(:,3)); %this assumes the toe is the lowest point. this is almost always true, but still might bug out later
+    y(length(y)+1) = min(polyA(:,3)); %this assumes the toe is the lowest point. this is almost always true, but still might bug out later
     
     %sort the x,y in ascending x
-    A = [internal_x,y_new];
+    A = [internal_x,y];
     [X,Y] = sort(A(:,1));
     B = A(Y,:);
     internal_x = B(:,1);
-    y_new = B(:,2);
+    y = B(:,2);
 
-    num_point = (polyA(end,1)+1:polyA(end,1)+length(y_new))'; %create the point numbers
+    num_point = (polyA(end,1)+1:polyA(end,1)+length(y))'; %create the point numbers
     
-    polyA_append = [num_point,internal_x,y_new]; %Combine to add to poly file
+    polyA_append = [num_point,internal_x,y]; %Combine to add to poly file
     disp(polyA_append);
-    plot(internal_x,y_new,'*');
+    plot(internal_x,y,'*');
     hold on
     plot(polyA(:,2),polyA(:,3));
     xlabel('X');
@@ -49,27 +48,29 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     title('Plot of the new poly x-y coordinates');
     
     %change all "32" facets to 0 facets
-%     num = 1;
-%     for i=1:length(polyB(:,1))
-%         if polyB(i,4)==32
-%             %check if the respective point in polyA is greater than the
-%             %debris start. Match by point number
-%             point_number = polyB(i,2);
-%             row_index = polyA(:,1) == point_number;
-%             x_val = polyA(row_index,2);
-%             %if x_val > debrisStart
-%                 %change the 32 flag to an internal flag (0)
-%                 polyB(i,4) = 0;
-%                 x_pointnum(num,:) = [x_val,point_number]; %collect the x and point number values into one array to use later
-%                 num = num+1;
-%             %end
-%         end
-%     end
-        
+    num = 1;
+    for i=1:length(polyB(:,1))
+        if polyB(i,4)==32
+            %check if the respective point in polyA is greater than the
+            %debris start. Match by point number
+            point_number = polyB(i,2);
+            row_index = polyA(:,1) == point_number;
+            x_val = polyA(row_index,2);
+            %if x_val > debrisStart
+                %change the 32 flag to an internal flag (0)
+                polyB(i,4) = 0;
+                x_pointnum(num,:) = [x_val,point_number]; %collect the x and point number values into one array to use later
+                num = num+1;
+            %end
+        end
+    end
+    
+    %add an extra for the taper?
+    
     %%Create the new polyB segment
     %Find the points intersecting the debris layer 
     xmin_index = x_pointnum(:,1)==min(x_pointnum(:,1));
-    intersect1 = x_pointnum(xmin_index,2); 
+    intersect1 = x_pointnum(xmin_index,2)-1; %+2 % the plus 2 is to make it taper off nicely
     disp('debris startpoint');
     disp(intersect1);
     
@@ -85,8 +86,8 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     
     %Create the facet array for the debris layer
     for i = 1:length(polyA_append(:,1))+1
-        if (i==1) %the first facet starts at the debris/ice intersection and is a 1
-            polyB_append(i,:) = [point_num,polyA_append(i,1),intersect1,1];
+        if (i==1) %the first facet starts at the debris/ice intersection
+            polyB_append(i,:) = [point_num,polyA_append(i,1),intersect1,32];
         elseif (i==length(polyA_append(:,1))+1) %connecting the ice to the debris toe, is a bottom facet
             polyB_append(i,:) = [point_num,polyA_append(i-1,1),intersect2+1,16];
         else %otherwise the node connects to 

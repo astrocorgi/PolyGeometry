@@ -1,3 +1,9 @@
+% this script loads the data and runs the functions needed to make a poly
+% geometry file for dynearthsol2D input. It takes the picks from SHARAD,
+% loops em together, cleans it up a little, then makes it into a poly file.
+% Finally, the debris is added on top.
+
+
 close all
 clear all
 clc
@@ -81,6 +87,6 @@ save polyfile_martian1
 
 %% Now add the debris
 
-addDebris(polyA,polyB,0,50,'euripus_ideal1.poly')
+addDebrisMartian(polyA,polyB,0,50,'euripus_ideal2.poly')
 
 

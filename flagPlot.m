@@ -15,6 +15,8 @@ for k=1:n
     [x_b,y_b] = getCoord(polyA_out,node_b);
     if flag==0
         plot([x_a x_b],[y_a y_b],'r-');
+    elseif flag==1
+        plot([x_a x_b],[y_a y_b],'m-');
     elseif flag==16
         plot([x_a x_b],[y_a y_b],'b-');
     elseif flag==32
