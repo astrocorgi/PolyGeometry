@@ -23,13 +23,11 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     m = delta_y/delta_x; %slope
     
     %create new points
-    y_new = m*(internal_x-debrisStart) + internal_y+30; %y = mx + b to create the new y coordinates for the debris layer
+    y_new = m*(internal_x-debrisStart) + internal_y+10; %y = mx + b to create the new y coordinates for the debris layer
     
     %add one extra point for debris-layer hitting ground in front of ice
     internal_x(length(internal_x)+1) = max(polyA(:,2))+debrisThickness*3; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
     y_new(length(y_new)+1) = min(polyA(:,3)); %this assumes the toe is the lowest point. this is almost always true, but still might bug out later
-    
-   
     
     %sort the x,y in ascending x
     A = [internal_x,y_new];
@@ -41,13 +39,8 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     num_point = (polyA(end,1)+1:polyA(end,1)+length(y_new))'; %create the point numbers
     
     polyA_append = [num_point,internal_x,y_new]; %Combine to add to poly file
-    
-    %add some padding to the front so the debris layer is extra thick there
-    %NOTE: AWKWARD HARD CODING HERE
-    polyA_append(end-3:end,2) = polyA_append(end-3:end,2) + 150;
-    
     disp(polyA_append);
-    plot(polyA_append(:,2),y_new,'*');
+    plot(internal_x,y_new,'*');
     hold on
     plot(polyA(:,2),polyA(:,3));
     xlabel('X');
@@ -101,17 +94,17 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
         end
         point_num = point_num+1;
     end
-    
-    
     PolyA_Out = [polyA;polyA_append];
     PolyB_Out = [polyB;polyB_append];
-    
     flagPlot(PolyA_Out,PolyB_Out);
     %disp('polyA new');
     %disp(PolyA_Out);
     %disp('polyB new');
     %disp(PolyB_Out);
     
+    %Awkwardly hard code some extra space on the front end
+    PolyA_Out(177,2) = PolyA_Out(17,2) + 50;
+    PolyA_Out(178,2) = PolyA_Out(178,2) + 50;
     
     %Find points for material determination
     internal_index = PolyB_Out(:,4) == 0; %all the internal boundaries
