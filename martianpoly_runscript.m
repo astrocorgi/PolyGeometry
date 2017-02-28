@@ -87,6 +87,6 @@ save polyfile_martian1
 
 %% Now add the debris
 
-addDebrisMartian(polyA,polyB,0,50,'euripus_ideal2.poly')
+addDebrisMartian(polyA,polyB,0,50,'euripus_ideal3.poly')
 
 

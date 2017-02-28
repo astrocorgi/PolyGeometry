@@ -23,7 +23,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     m = delta_y/delta_x; %slope
     
     %create new points
-    y_new = m*(internal_x-debrisStart) + internal_y+4; %y = mx + b to create the new y coordinates for the debris layer
+    y_new = m*(internal_x-debrisStart) + internal_y+10; %y = mx + b to create the new y coordinates for the debris layer
     
     %add one extra point for debris-layer hitting ground in front of ice
     internal_x(length(internal_x)+1) = max(polyA(:,2))+debrisThickness*3; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
