@@ -63,38 +63,23 @@ plot(xx,yy,'b*')
 polyA = [xx,yy]; %incomplete polyA
 
 
-%Delete and adjust specific points that look bad
-polyA(168,:) = [];
-polyA(168,:) = [];
-polyA(168,:) = [];
-polyA(168,:) = [];
-polyA(167,:) = [];
-polyA(166,:) = [];
-polyA(165,:) = [];
-polyA(164,:) = [];
-polyA(163,:) = [];
-polyA(162,:) = [];
-polyA(142,2) = polyA(142,2)+2;
-polyA(143,2) = polyA(143,2)+3;
-polyA(144,2) = polyA(144,2)+4;
-polyA(145,2) = polyA(145,2)+5;
-polyA(146,2) = polyA(146,2)+4;
-polyA(147,2) = polyA(147,2)+3;
-polyA(147:159,2) = polyA(147:159,2)-4;
+%Delete specific points that look bad
+deleteRow(polyA,14722.1399528288);
+deleteRow(polyA,14751.6511794271);
+deleteRow(polyA,14722.1399528288);
 
 plot(polyA(:,1),polyA(:,2),'ro');
 
 polyB = zeros(length(xx),4);
 
 nodes = [0:length(polyA(:,1))-1]';
-polyA = [nodes, polyA(:,1), polyA(:,2)];
 
 %Loop everything around
-for k = 0:length(polyA(:,1))-2
+for k = 0:length(xx)-2
     polyB(k+1,1) = k;
     polyB(k+1,2) = k;
     polyB(k+1,3) = k+1;
-    if k < 160 %derived from plot
+    if k < 32 %derived from plot
         polyB(k+1,4) = 32;
     else
         polyB(k+1,4) = 16;
@@ -114,6 +99,6 @@ save polyfile_martian1
 
 %% Now add the debris
 
-addDebrisMartian(polyA,polyB,0,30,'euripus_ideal4.poly')
+addDebrisMartian(polyA,polyB,0,50,'euripus_ideal3.poly')
 
 

@@ -23,13 +23,11 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     m = delta_y/delta_x; %slope
     
     %create new points
-    y_new = m*(internal_x-debrisStart) + internal_y+30; %y = mx + b to create the new y coordinates for the debris layer
+    y_new = m*(internal_x-debrisStart) + internal_y+20; %y = mx + b to create the new y coordinates for the debris layer
     
     %add one extra point for debris-layer hitting ground in front of ice
-    internal_x(length(internal_x)+1) = max(polyA(:,2))+debrisThickness*3; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
+    internal_x(length(internal_x)+1) = max(polyA(:,2))+debrisThickness*2; %x = glacier toe+debris thickness plus a little bit extra (this is arbitrary, I don't think anyone has characterized debris accumulation at DCG toes)
     y_new(length(y_new)+1) = min(polyA(:,3)); %this assumes the toe is the lowest point. this is almost always true, but still might bug out later
-    
-   
     
     %sort the x,y in ascending x
     A = [internal_x,y_new];
@@ -44,7 +42,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     
     %add some padding to the front so the debris layer is extra thick there
     %NOTE: AWKWARD HARD CODING HERE
-    polyA_append(end-3:end,2) = polyA_append(end-3:end,2) + 150;
+    polyA_append(end-10:end,2) = polyA_append(end-10:end,2) + 200;
     
     disp(polyA_append);
     plot(polyA_append(:,2),y_new,'*');
