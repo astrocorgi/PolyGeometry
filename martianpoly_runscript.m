@@ -54,16 +54,20 @@ plot(combined_crop(:,1),combined_crop(:,2));
 
 %% assigning node numbers
 
-
-nodes = [0:length(combined_crop(:,1))-1]';
 x = combined_crop(:,1);
 y = combined_crop(:,2);
 
-polyA = [nodes,x,y];
-polyB = zeros(length(x),4);
+xx = interp(x,6);
+yy = interp(y,6);
+
+nodes = [0:length(xx)-1]';
+
+
+polyA = [nodes,xx,yy];
+polyB = zeros(length(xx),4);
 
 %Loop everything around
-for k = 0:length(x)-2
+for k = 0:length(xx)-2
     polyB(k+1,1) = k;
     polyB(k+1,2) = k;
     polyB(k+1,3) = k+1;
