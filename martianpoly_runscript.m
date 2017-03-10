@@ -43,10 +43,10 @@ combined_crop(33,:) = [];
 combined_crop(32,:) = []; 
 combined_crop(31,:) = []; 
 
-combined_crop(:,2) = combined_crop(:,2)-0.03*combined_crop(:,1)+1500;
+combined_crop(:,2) = combined_crop(:,2)+1500;
 
-toe_insert = [14250,360;14750,150];
-combined_crop = [combined_crop(1:30,:); toe_insert(:,:); combined_crop(31:end,:)]; 
+%toe_insert = [14250,360;14750,150];
+%combined_crop = [combined_crop(1:30,:); toe_insert(:,:); combined_crop(31:end,:)]; 
 
 
 %% assigning node numbers
