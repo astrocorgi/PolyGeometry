@@ -37,13 +37,13 @@ combined(53,:) = [];
 plot(combined(:,1),combined(:,2)); %plot result
 
 figure
-index = combined(:,1) < 15000;
+index = combined(:,1) < 5000;
 combined_crop = combined(index,:);
 combined_crop(33,:) = []; 
 combined_crop(32,:) = []; 
 combined_crop(31,:) = []; 
 
-combined_crop(:,2) = combined_crop(:,2)-0.03*combined_crop(:,1)+500;
+combined_crop(:,2) = combined_crop(:,2)-0.03*combined_crop(:,1)+1500;
 
 toe_insert = [14250,360;14750,150];
 combined_crop = [combined_crop(1:30,:); toe_insert(:,:); combined_crop(31:end,:)]; 
@@ -114,6 +114,6 @@ save polyfile_martian1
 
 %% Now add the debris
 
-addDebrisMartian(polyA,polyB,0,30,'euripus_ideal4.poly')
+addDebrisMartian(polyA,polyB,0,30,'euripus_blob.poly')
 
 
