@@ -1,4 +1,4 @@
-    % this script loads the data and runs the functions needed to make a poly
+% this script loads the data and runs the functions needed to make a poly
 % geometry file for dynearthsol2D input. It takes the picks from SHARAD,
 % loops em together, cleans it up a little, then makes it into a poly file.
 % Finally, the debris is added on top.
@@ -28,11 +28,11 @@ combined = [mola_x, mola(:,2);subsurf_flip(:,1),subsurf_flip(:,2)];
 combined(:,1) = combined(:,1)*1000;
 
 plot(combined(:,1),combined(:,2)); %plot result
-combined = deleteRow(combined,24468.051803350210); %select point for removal
+%combined = deleteRow(combined,24468.051803350210); %select point for removal
 combined(54,:) = [];
 
 plot(combined(:,1),combined(:,2)); %plot result
-combined = deleteRow(combined,24006.390448605742); %select point for removal
+%combined = deleteRow(combined,24006.390448605742); %select point for removal
 combined(53,:) = [];
 plot(combined(:,1),combined(:,2)); %plot result
 
@@ -43,7 +43,7 @@ combined_crop(33,:) = [];
 combined_crop(32,:) = []; 
 combined_crop(31,:) = []; 
 
-combined_crop(:,2) = combined_crop(:,2)+1500;
+combined_crop(:,2) = combined_crop(:,2)-0.03*combined_crop(:,1)+500;
 
 toe_insert = [14250,360;14750,150];
 combined_crop = [combined_crop(1:30,:); toe_insert(:,:); combined_crop(31:end,:)]; 
@@ -106,7 +106,7 @@ end_node = polyA(end,1);
 polyB(end,1) = polyB(end-1,1)+1;
 polyB(end,2) = end_node;
 polyB(end,3) = 0;
-polyB(end,4) = 1; %facet flag
+polyB(end,4) = 1;
 
 flagPlot(polyA,polyB);
 
@@ -114,6 +114,4 @@ save polyfile_martian1
 
 %% Now add the debris
 
-addDebrisMartian(polyA,polyB,0,30,'euripus_ideal_5.poly')
-
-
+addDebrisMartian(polyA,polyB,0,5,'euripus_ideal5.poly')

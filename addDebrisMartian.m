@@ -43,6 +43,7 @@ function [ PolyA_Out, PolyB_Out ] = addDebrisMartian(polyA,polyB,debrisStart,deb
     %add some padding to the front so the debris layer is extra thick there
     %NOTE: AWKWARD HARD CODING HERE
     polyA_append(end-10:end,2) = polyA_append(end-10:end,2) + 200;
+    polyA_append(end-10:end-1,3) = polyA_append(end-10:end-1,3) - 15; %The front coords were too tall
     
     disp(polyA_append);
     plot(polyA_append(:,2),y_new,'*');
