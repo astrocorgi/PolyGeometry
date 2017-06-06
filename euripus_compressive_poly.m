@@ -84,7 +84,7 @@ polyA(147:159,2) = polyA(147:159,2)-4;
 
 plot(polyA(:,1),polyA(:,2),'ro');
 
-polyB = zeros(length(xx),4);
+polyB = zeros(length(polyA(:,1)),4);
 
 nodes = [0:length(polyA(:,1))-1]';
 polyA = [nodes, polyA(:,1), polyA(:,2)];
@@ -108,10 +108,28 @@ polyB(end,2) = end_node;
 polyB(end,3) = 0;
 polyB(end,4) = 1;
 
+%subtracting a parabola from the bottom layer to make a compressive regime
+%points 160 to 719 are on the bottom
+l = 719-160;
+dist = max(x);
+interval = dist/l;
+x_parabola = 0:interval:dist;
+y_parabola = -0.0000050*(x_parabola-14916/2).^2+278.1;
+polyA(161:720,3) = polyA(161:720,3) - y_parabola';
+
+%fixing individual basal points that look weird
+polyA(162,3) = polyA(162,3) - 10;
+polyA(163,3) = polyA(163,3) - 8;
+polyA(164,3) = polyA(164,3) - 5;
+polyA(165,3) = polyA(165,3) - 5;
+polyA(166,3) = polyA(166,3) - 6;
+polyA(167:186,3) = polyA(167:186,3) - 2;
+polyA(187,3) = polyA(187,3) - 1;
+
 flagPlot(polyA,polyB);
 
-save polyfile_martian1
+save polyfile_martian_comp
 
 %% Now add the debris
 
-addDebrisMartian(polyA,polyB,0,5,'euripus_ideal5.poly')
+addDebrisMartian(polyA,polyB,0,5,'euripus_ideal_comp.poly')
