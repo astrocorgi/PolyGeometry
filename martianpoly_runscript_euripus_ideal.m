@@ -74,6 +74,7 @@ polyA(165,:) = [];
 polyA(164,:) = [];
 polyA(163,:) = [];
 polyA(162,:) = [];
+polyA(705:720,:) = [];
 polyA(142,2) = polyA(142,2)+2;
 polyA(143,2) = polyA(143,2)+3;
 polyA(144,2) = polyA(144,2)+4;
@@ -81,6 +82,8 @@ polyA(145,2) = polyA(145,2)+5;
 polyA(146,2) = polyA(146,2)+4;
 polyA(147,2) = polyA(147,2)+3;
 polyA(147:159,2) = polyA(147:159,2)-4;
+
+polya_max = length(polyA(:,1));
 
 plot(polyA(:,1),polyA(:,2),'ro');
 
@@ -114,4 +117,4 @@ save polyfile_martian1
 
 %% Now add the debris
 
-addDebrisMartian(polyA,polyB,0,5,'euripus_ideal5.poly')
+addDebrisMartian(polyA,polyB,0,5,'euripus_ext_headwall.poly')
